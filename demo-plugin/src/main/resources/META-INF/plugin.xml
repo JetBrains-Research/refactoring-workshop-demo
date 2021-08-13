@@ -13,7 +13,6 @@
         <localInspection language="JAVA"
                          displayName="Feature envy"
                          groupName="Feature envy"
-                         groupPath="SDK"
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="org.jetbrains.research.refactoringDemoPlugin.featureEnvy.MyFeatureEnvyInspection"/>

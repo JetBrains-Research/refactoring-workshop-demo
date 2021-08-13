@@ -13,6 +13,10 @@ import com.intellij.psi.PsiMethod
 import com.intellij.refactoring.move.moveInstanceMethod.MoveInstanceMethodDialog
 import org.jetbrains.research.refactoringDemoPlugin.util.getAvailableVariables
 
+/**
+ * Walks through methods in the file, check if a method uses entities of another class more than those of enclosing one,
+ * and suggest Move Method refactoring.
+ */
 class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
@@ -23,7 +27,6 @@ class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
         private val minimumAccessesNumber = 3
 
         override fun visitElement(element: PsiElement) {
-            super.visitElement(element)
             if (element is PsiMethod) {
                 val method: PsiMethod = element
                 val currentClass = method.containingClass
@@ -34,13 +37,21 @@ class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
                 accessedClasses.forEach { accessedClass ->
                     if (accessedClass.value >= minimumAccessesNumber) {
                         if (canMoveInstanceMethod(method, accessedClass.key)) {
-                            holder?.registerProblem(method, "", MoveMethodFix(method, accessedClass.key))
+                            holder?.registerProblem(
+                                method,
+                                "Method uses methods of another class more than those of the enclosing class.",
+                                MoveMethodFix(method, accessedClass.key)
+                            )
                         }
                     }
                 }
             }
         }
 
+        /**
+         * Checks if a method could be moved to the target class.
+         * Returns true if a type of the target class occurs in fields' or parameters' types.
+         */
         private fun canMoveInstanceMethod(method: PsiMethod, target: PsiClass): Boolean {
             val available = getAvailableVariables(method, target)
             return available.isNotEmpty()
@@ -55,12 +66,16 @@ class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
         }
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            moveInstanceMethod(methodToMove, destinationClass)
+            ApplicationManager.getApplication().runReadAction {
+                moveInstanceMethod(methodToMove, destinationClass)
+            }
         }
 
         private fun moveInstanceMethod(methodToMove: PsiMethod, targetClass: PsiClass) {
             val available = getAvailableVariables(methodToMove, targetClass)
-            check(available.isNotEmpty()) { "Cannot move method" }
+            if (available.isEmpty()) {
+                return
+            }
             val dialog = MoveInstanceMethodDialog(methodToMove, available)
             dialog.title = "Move Method " + methodToMove.name
             ApplicationManager.getApplication().invokeAndWait { dialog.show() }

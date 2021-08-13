@@ -4,16 +4,36 @@ import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiClassType
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiVariable
-import java.util.Arrays
-import java.util.Objects
-import java.util.stream.Stream
+import com.intellij.psi.PsiParameter
+import com.intellij.psi.PsiField
 
+/*
+    Searches for variables (fields or parameters) of the type the method is supposed to be moved to.
+ */
 fun getAvailableVariables(method: PsiMethod, target: PsiClass): Array<PsiVariable> {
     val psiClass = method.containingClass
-    val parameters: Stream<PsiVariable> = Arrays.stream(method.parameterList.parameters)
-    val fields: Stream<PsiVariable> = if (psiClass == null) Stream.empty() else Arrays.stream(psiClass.fields)
-    return Stream.concat(parameters, fields)
-        .filter(Objects::nonNull)
-        .filter { p -> p.type is PsiClassType && target == (p.type as PsiClassType).resolve() }
-        .toArray() as Array<PsiVariable>
+    val parameters: Array<out PsiParameter> = method.parameterList.parameters
+    val fields: Array<out PsiField> = psiClass!!.fields
+    return concat(parameters, fields) { v -> v.type is PsiClassType && target == (v.type as PsiClassType).resolve() }
+}
+
+/*
+    Concatenates two arrays and filters the elements by the condition.
+ */
+fun concat(
+    array1: Array<out PsiVariable>,
+    array2: Array<out PsiVariable>,
+    condition: (v: PsiVariable) -> Boolean
+): Array<PsiVariable> {
+    var resultArray = arrayOf<PsiVariable>()
+    for (element in array1) {
+        if (condition(element))
+            resultArray += element
+    }
+
+    for (element in array2) {
+        if (condition(element))
+            resultArray += element
+    }
+    return resultArray
 }

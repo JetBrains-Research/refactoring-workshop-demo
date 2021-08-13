@@ -5,6 +5,9 @@ import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiMethodCallExpression
 import com.siyeh.ig.psiutils.LibraryUtil
 
+/**
+ * Extracts all accesses to other classes excluding library ones within the method.
+ */
 class ClassAccessVisitor(private val currentClass: PsiClass) : JavaRecursiveElementVisitor() {
     var accessedClasses: HashMap<PsiClass, Int> = HashMap()
 
@@ -22,7 +25,10 @@ class ClassAccessVisitor(private val currentClass: PsiClass) : JavaRecursiveElem
         }
 
         if (accessedClasses.contains(calledClass)) {
-            accessedClasses[calledClass]?.plus(1)
+            val currentCount: Int = accessedClasses[calledClass]!!
+            accessedClasses[calledClass] = currentCount + 1
+        } else {
+            accessedClasses[calledClass] = 1
         }
     }
 }
