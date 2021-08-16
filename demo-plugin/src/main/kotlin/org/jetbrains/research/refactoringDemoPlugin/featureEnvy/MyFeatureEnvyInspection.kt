@@ -58,6 +58,7 @@ class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
         }
     }
 
+    @Suppress("StatefulEp")
     class MoveMethodFix(private val methodToMove: PsiMethod, private val destinationClass: PsiClass) : LocalQuickFix {
         private val quickFixName = "Move method to a more related class"
 
