@@ -1,7 +1,8 @@
 rootProject.name = "refactoring-workshop-demo"
 
 include(
-    "demo-plugin"
+    "demo-plugin",
+    "demo-cli"
 )
 
 pluginManagement {
