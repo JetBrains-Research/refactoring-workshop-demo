@@ -6,7 +6,12 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
-import com.intellij.psi.*
+import com.intellij.psi.JavaRecursiveElementVisitor
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiElementVisitor
+import com.intellij.psi.PsiMethod
+import com.intellij.psi.PsiMethodCallExpression
 import com.intellij.refactoring.move.moveInstanceMethod.MoveInstanceMethodDialog
 import com.siyeh.ig.psiutils.LibraryUtil
 import org.jetbrains.research.refactoringDemoPlugin.util.getAvailableVariables
@@ -35,7 +40,7 @@ class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
             accessCountPerClass.compute(calledClass) { _, count -> (count ?: 0) + 1 }
         }
     }
-    
+
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         return FeatureEnvyInspectionVisitor(holder)
     }
