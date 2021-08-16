@@ -6,11 +6,9 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiElementVisitor
-import com.intellij.psi.PsiMethod
+import com.intellij.psi.*
 import com.intellij.refactoring.move.moveInstanceMethod.MoveInstanceMethodDialog
+import com.siyeh.ig.psiutils.LibraryUtil
 import org.jetbrains.research.refactoringDemoPlugin.util.getAvailableVariables
 
 /**
@@ -19,6 +17,25 @@ import org.jetbrains.research.refactoringDemoPlugin.util.getAvailableVariables
  */
 class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
 
+    /**
+     * Extracts all accesses to other classes excluding library ones within the method.
+     */
+    private class ClassAccessVisitor(private val currentClass: PsiClass) : JavaRecursiveElementVisitor() {
+        val accessCountPerClass: HashMap<PsiClass, Int> = HashMap()
+
+        override fun visitMethodCallExpression(expression: PsiMethodCallExpression) {
+            super.visitMethodCallExpression(expression)
+            val method = expression.resolveMethod() ?: return
+            val calledClass = method.containingClass ?: return
+
+            if (currentClass == calledClass || LibraryUtil.classIsInLibrary(calledClass)) {
+                return
+            }
+
+            accessCountPerClass.compute(calledClass) { _, count -> (count ?: 0) + 1 }
+        }
+    }
+    
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         return FeatureEnvyInspectionVisitor(holder)
     }
