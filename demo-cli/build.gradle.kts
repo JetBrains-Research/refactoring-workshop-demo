@@ -1,11 +1,13 @@
 group = rootProject.group
 version = rootProject.version
 
-open class IOCliTask : org.jetbrains.intellij.tasks.RunIdeTask() {
-    @get:Input
-    val runner: String? by project
+dependencies {
+    implementation("com.github.ajalt:clikt:2.8.0")
+    implementation("com.google.code.gson:gson:2.7")
+}
 
-    init {
+tasks {
+    runIde {
         jvmArgs = listOf(
             "-Djava.awt.headless=true",
             "--add-exports",
@@ -16,13 +18,8 @@ open class IOCliTask : org.jetbrains.intellij.tasks.RunIdeTask() {
         standardInput = System.`in`
         standardOutput = System.`out`
     }
-}
 
-tasks {
-    register<IOCliTask>("runDemoPlugin") {
-        dependsOn("buildPlugin")
-        args = listOfNotNull(
-            runner
-        )
+    register("runDemoPluginCLI") {
+        dependsOn(runIde)
     }
 }
