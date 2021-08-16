@@ -34,13 +34,13 @@ class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
                 visitor.visitElement(method)
 
                 val accessedClasses = visitor.accessedClasses
-                accessedClasses.forEach { accessedClass ->
-                    if (accessedClass.value >= minimumAccessesNumber) {
-                        if (canMoveInstanceMethod(method, accessedClass.key)) {
+                accessedClasses.forEach { (clazz, accessCount) ->
+                    if (accessCount >= minimumAccessesNumber) {
+                        if (canMoveInstanceMethod(method, clazz)) {
                             holder?.registerProblem(
                                 method,
                                 "Method uses methods of another class more than those of the enclosing class.",
-                                MoveMethodFix(method, accessedClass.key)
+                                MoveMethodFix(method, clazz)
                             )
                         }
                     }
