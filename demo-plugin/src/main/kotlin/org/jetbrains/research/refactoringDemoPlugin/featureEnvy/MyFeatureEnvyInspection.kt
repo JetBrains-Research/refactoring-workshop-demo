@@ -33,8 +33,8 @@ class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
                 val visitor = ClassAccessVisitor(currentClass)
                 visitor.visitElement(method)
 
-                val accessedClasses = visitor.accessedClasses
-                accessedClasses.forEach { (clazz, accessCount) ->
+                val accessCounts = visitor.accessCountPerClass
+                accessCounts.forEach { (clazz, accessCount) ->
                     if (accessCount >= minAccessCount) {
                         if (canMoveInstanceMethod(method, clazz)) {
                             holder?.registerProblem(

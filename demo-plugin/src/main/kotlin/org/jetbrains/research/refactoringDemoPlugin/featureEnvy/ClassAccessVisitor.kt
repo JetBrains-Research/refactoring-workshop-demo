@@ -9,26 +9,17 @@ import com.siyeh.ig.psiutils.LibraryUtil
  * Extracts all accesses to other classes excluding library ones within the method.
  */
 class ClassAccessVisitor(private val currentClass: PsiClass) : JavaRecursiveElementVisitor() {
-    var accessedClasses: HashMap<PsiClass, Int> = HashMap()
+    val accessCountPerClass: HashMap<PsiClass, Int> = HashMap()
 
     override fun visitMethodCallExpression(expression: PsiMethodCallExpression) {
         super.visitMethodCallExpression(expression)
         val method = expression.resolveMethod() ?: return
         val calledClass = method.containingClass ?: return
 
-        if (currentClass == calledClass) {
+        if (currentClass == calledClass || LibraryUtil.classIsInLibrary(calledClass)) {
             return
         }
-
-        if (LibraryUtil.classIsInLibrary(calledClass)) {
-            return
-        }
-
-        if (accessedClasses.contains(calledClass)) {
-            val currentCount: Int = accessedClasses[calledClass]!!
-            accessedClasses[calledClass] = currentCount + 1
-        } else {
-            accessedClasses[calledClass] = 1
-        }
+        
+        accessCountPerClass.compute(calledClass) { _, count -> (count ?: 0) + 1 }
     }
 }
