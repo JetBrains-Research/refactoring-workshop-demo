@@ -24,18 +24,18 @@ class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
     }
 
     class FeatureEnvyInspectionVisitor(private val holder: ProblemsHolder?) : PsiElementVisitor() {
-        private val minimumAccessesNumber = 3
+        private val minAccessCount = 3
 
         override fun visitElement(element: PsiElement) {
             if (element is PsiMethod) {
                 val method: PsiMethod = element
-                val currentClass = method.containingClass
-                val visitor = ClassAccessVisitor(currentClass!!)
+                val currentClass = method.containingClass ?: return
+                val visitor = ClassAccessVisitor(currentClass)
                 visitor.visitElement(method)
 
                 val accessedClasses = visitor.accessedClasses
                 accessedClasses.forEach { (clazz, accessCount) ->
-                    if (accessCount >= minimumAccessesNumber) {
+                    if (accessCount >= minAccessCount) {
                         if (canMoveInstanceMethod(method, clazz)) {
                             holder?.registerProblem(
                                 method,
