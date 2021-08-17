@@ -11,6 +11,8 @@ import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.PsiManager
+import java.io.FileWriter
+import kotlin.system.exitProcess
 
 class PluginRunner : ApplicationStarter {
     override fun getCommandName(): String {
@@ -23,8 +25,8 @@ class PluginRunner : ApplicationStarter {
 }
 
 class JavaDocExtractor : CliktCommand() {
-    private val projectPath by argument(help = "Path to the project").file(mustExist = true, canBeFile = false)
-    private val outputPath by argument(help = "Output directory").file(canBeFile = false)
+    private val input by argument(help = "Path to the project").file(mustExist = true, canBeFile = false)
+    private val output by argument(help = "Output directory").file(canBeFile = false)
 
     private val fileTypeName = "JAVA"
 
@@ -33,18 +35,22 @@ class JavaDocExtractor : CliktCommand() {
      * and saves the method and the corresponding JavaDoc to the output file.
      */
     override fun run() {
-        val project = ProjectUtil.openOrImport(projectPath.path, null, true) ?: return
+        val project = ProjectUtil.openOrImport(input.path, null, true) ?: return
         val gson = GsonBuilder().setPrettyPrinting().create()
+        val fileWriter = FileWriter(output, true)
+        fileWriter.write("[")
         val files = extractFiles(project)
         files.forEach { file ->
             file.classes.forEach { c ->
                 c.methods.forEach { m ->
                     val datasetItem = DatasetItem(m.name, m.docComment.toString())
                     val json = gson.toJson(datasetItem)
-                    outputPath.writeText(json)
+                    fileWriter.write("$json, \n")
                 }
             }
         }
+        fileWriter.write("]")
+        exitProcess(0)
     }
 
     /**
@@ -54,9 +60,7 @@ class JavaDocExtractor : CliktCommand() {
         val javaFiles: MutableList<PsiJavaFile> = ArrayList()
         ProjectFileIndex.SERVICE.getInstance(project).iterateContent { file: VirtualFile? ->
             val psiFile = PsiManager.getInstance(project).findFile(file!!)
-            if (psiFile is PsiJavaFile && !psiFile.isDirectory()
-                && fileTypeName == psiFile.getFileType().name
-            ) {
+            if (psiFile is PsiJavaFile && !psiFile.isDirectory() && fileTypeName == psiFile.getFileType().name) {
                 javaFiles.add(psiFile)
             }
             true

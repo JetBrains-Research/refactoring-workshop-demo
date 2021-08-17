@@ -8,6 +8,9 @@ dependencies {
 
 tasks {
     runIde {
+        val input: String? by project
+        val output: String? by project
+        args = listOfNotNull("DemoPluginCLI", input, output)
         jvmArgs = listOf(
             "-Djava.awt.headless=true",
             "--add-exports",
@@ -15,8 +18,6 @@ tasks {
             "-Djdk.module.illegalAccess.silent=true"
         )
         maxHeapSize = "20g"
-        standardInput = System.`in`
-        standardOutput = System.`out`
     }
 
     register("runDemoPluginCLI") {
