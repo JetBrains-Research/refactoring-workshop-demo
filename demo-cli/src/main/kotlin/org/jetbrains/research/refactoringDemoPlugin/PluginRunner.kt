@@ -32,7 +32,7 @@ class JavaDocExtractor : CliktCommand() {
 
     /**
      * Walks through files in the project, extracts all methods in each file
-     * and saves the method and the corresponding JavaDoc to the output file.
+     * and saves the method name and the corresponding JavaDoc to the output file.
      */
     override fun run() {
         val project = ProjectUtil.openOrImport(input.path, null, true) ?: return
