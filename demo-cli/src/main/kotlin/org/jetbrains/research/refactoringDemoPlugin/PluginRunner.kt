@@ -43,7 +43,8 @@ class JavaDocExtractor : CliktCommand() {
         files.forEach { file ->
             file.classes.forEach { c ->
                 c.methods.forEach { m ->
-                    val datasetItem = DatasetItem(m.name, m.docComment.toString())
+                    val comment = m.docComment?.text ?: ""
+                    val datasetItem = DatasetItem(m.name, comment)
                     val json = gson.toJson(datasetItem)
                     fileWriter.write("$json, \n")
                 }
