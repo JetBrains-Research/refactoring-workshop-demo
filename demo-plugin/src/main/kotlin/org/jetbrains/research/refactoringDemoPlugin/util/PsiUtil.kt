@@ -1,11 +1,9 @@
 package org.jetbrains.research.refactoringDemoPlugin.util
 
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiClassType
-import com.intellij.psi.PsiMethod
-import com.intellij.psi.PsiVariable
-import com.intellij.psi.PsiParameter
-import com.intellij.psi.PsiField
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ProjectFileIndex
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.*
 
 /*
     Searches for variables (fields or parameters) of the type the method is supposed to be moved to.
@@ -32,4 +30,22 @@ fun concatFiltered(
     array1.filterTo(filteredList, condition)
     array2.filterTo(filteredList, condition)
     return filteredList.toTypedArray()
+}
+
+/*
+    Extracts all Java classes from the project.
+ */
+fun extractClasses(project: Project?): MutableList<PsiClass> {
+    val classes: MutableList<PsiClass> = ArrayList()
+
+    ProjectFileIndex.SERVICE.getInstance(project).iterateContent { file: VirtualFile? ->
+        val psiFile = PsiManager.getInstance(project!!).findFile(file!!)
+        if (psiFile is PsiJavaFile && !psiFile.isDirectory()
+            && "JAVA" == psiFile.getFileType().name
+        ) {
+            classes.addAll(psiFile.classes)
+        }
+        true
+    }
+    return classes
 }

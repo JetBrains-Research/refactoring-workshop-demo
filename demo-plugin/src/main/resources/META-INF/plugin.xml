@@ -16,6 +16,10 @@
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="org.jetbrains.research.refactoringDemoPlugin.featureEnvy.MyFeatureEnvyInspection"/>
+
+        <toolWindow id="Project statistics" secondary="true" anchor="bottom"
+                    factoryClass="org.jetbrains.research.refactoringDemoPlugin.metrics.MyToolWindowFactory"
+        />
     </extensions>
 
 </idea-plugin>
