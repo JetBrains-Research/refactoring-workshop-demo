@@ -7,8 +7,6 @@ data class ClassStatistics(
     val fieldsNumber: Int,
     // lines of code inside the class
     val loc: Int,
-    // lack of cohesion of methods
-    val lcom: Int,
     // number of children (subclasses)
     val noc: Int
 )

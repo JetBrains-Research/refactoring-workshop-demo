@@ -3,6 +3,7 @@ package org.jetbrains.research.refactoringDemoPlugin.metrics
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
+import org.jetbrains.research.refactoringDemoPlugin.util.countLines
 import org.jetbrains.research.refactoringDemoPlugin.util.extractClasses
 import java.awt.BorderLayout
 import javax.swing.JPanel
@@ -23,7 +24,6 @@ class MyToolWindowContent(private val project: Project) {
         tableModel.addColumn("Method Number")
         tableModel.addColumn("Lines Of Code")
         tableModel.addColumn("Number Of Children")
-        tableModel.addColumn("Lack Of Cohesion Of Methods")
 
         val entries: HashMap<String, ClassStatistics> = calculateStatisticsForClasses()
         entries.forEach { e ->
@@ -34,7 +34,6 @@ class MyToolWindowContent(private val project: Project) {
                     e.value.methodNumber,
                     e.value.loc,
                     e.value.noc,
-                    e.value.lcom
                 )
             )
         }
@@ -46,8 +45,13 @@ class MyToolWindowContent(private val project: Project) {
         val results: HashMap<String, ClassStatistics> = hashMapOf()
         val classes = extractClasses(project)
         classes.forEach { clazz ->
-            //TODO: implement LOC, NOC, LCOM metrics calculation
-            val statistics = ClassStatistics(clazz.fields.size, clazz.methods.size, 0, 0, 0)
+            val statistics =
+                ClassStatistics(
+                    clazz.fields.size,
+                    clazz.methods.size,
+                    countLines(clazz.text),
+                    clazz.children.size
+                )
             results[clazz.qualifiedName!!] = statistics
         }
         return results
