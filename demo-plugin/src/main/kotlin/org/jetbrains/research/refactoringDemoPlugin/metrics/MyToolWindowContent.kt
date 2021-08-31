@@ -2,10 +2,10 @@ package org.jetbrains.research.refactoringDemoPlugin.metrics
 
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.table.JBTable
 import org.jetbrains.research.refactoringDemoPlugin.util.extractClasses
 import java.awt.BorderLayout
 import javax.swing.JPanel
-import javax.swing.JTable
 import javax.swing.table.DefaultTableModel
 
 class MyToolWindowContent(private val project: Project) {
@@ -16,24 +16,25 @@ class MyToolWindowContent(private val project: Project) {
     }
 
     private fun createContent() {
-        val model = DefaultTableModel()
-        val table = JTable(model)
-        model.addColumn("Class name")
-        model.addColumn("Field number")
-        model.addColumn("Method number")
-        model.addColumn("Lines Of Code")
-        model.addColumn("Number Of Children")
-        model.addColumn("Lack Of Cohesion Of Methods")
+        val tableModel = DefaultTableModel()
+        val table = JBTable(tableModel)
+        tableModel.addColumn("Class Name")
+        tableModel.addColumn("Field Number")
+        tableModel.addColumn("Method Number")
+        tableModel.addColumn("Lines Of Code")
+        tableModel.addColumn("Number Of Children")
+        tableModel.addColumn("Lack Of Cohesion Of Methods")
 
-        val rows: HashMap<String, ClassStatistics> = calculateStatisticsForClasses()
-        rows.forEach { r ->
-            model.addRow(
+        val entries: HashMap<String, ClassStatistics> = calculateStatisticsForClasses()
+        entries.forEach { e ->
+            tableModel.addRow(
                 arrayOf(
-                    r.value.fieldsNumber,
-                    r.value.methodNumber,
-                    r.value.loc,
-                    r.value.noc,
-                    r.value.lcom
+                    e.key,
+                    e.value.fieldsNumber,
+                    e.value.methodNumber,
+                    e.value.loc,
+                    e.value.noc,
+                    e.value.lcom
                 )
             )
         }
