@@ -1,4 +1,4 @@
-package org.jetbrains.research.refactoringDemoPlugin.metrics
+package org.jetbrains.research.refactoringDemoPlugin.statistics
 
 data class ClassStatistics(
     // number of methods in the class

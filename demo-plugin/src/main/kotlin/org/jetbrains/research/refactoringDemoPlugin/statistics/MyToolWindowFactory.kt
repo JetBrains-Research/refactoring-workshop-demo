@@ -1,4 +1,4 @@
-package org.jetbrains.research.refactoringDemoPlugin.metrics
+package org.jetbrains.research.refactoringDemoPlugin.statistics
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
