@@ -31,7 +31,8 @@ class LicenseFileEditorNotificationProvider : EditorNotifications.Provider<Edito
         }
         val licenseDetector = LicenseDetector()
         val license = licenseDetector.detectLicense(licenseDocument.text)
-        licenseNotificationPanel.text = "The module license is $license"
+        val licenseName = license?.name ?: "unknown"
+        licenseNotificationPanel.text = "The module license is $licenseName"
         return licenseNotificationPanel
     }
 }
