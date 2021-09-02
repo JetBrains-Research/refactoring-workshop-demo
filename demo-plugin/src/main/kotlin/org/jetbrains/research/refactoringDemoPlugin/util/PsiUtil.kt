@@ -42,11 +42,11 @@ fun concatFiltered(
 /*
     Extracts all Java classes from the project.
  */
-fun extractClasses(project: Project?): MutableList<PsiClass> {
+fun extractJavaClasses(project: Project): MutableList<PsiClass> {
     val classes: MutableList<PsiClass> = ArrayList()
 
     ProjectFileIndex.SERVICE.getInstance(project).iterateContent { file: VirtualFile? ->
-        val psiFile = PsiManager.getInstance(project!!).findFile(file!!)
+        val psiFile = PsiManager.getInstance(project).findFile(file!!)
         if (psiFile is PsiJavaFile && !psiFile.isDirectory() &&
             "JAVA" == psiFile.getFileType().name
         ) {
@@ -60,13 +60,4 @@ fun extractClasses(project: Project?): MutableList<PsiClass> {
 /*
     Calculates the number of lines in the text.
  */
-fun countLines(clazzText: String): Int {
-    var linesCount = 0
-    val chars = clazzText.toCharArray()
-    for (c in chars) {
-        if (c == '\n' || c == '\r') {
-            linesCount += 1
-        }
-    }
-    return linesCount
-}
+fun countLines(classText: String) = classText.toCharArray().count { it == '\n' || it == '\r' }

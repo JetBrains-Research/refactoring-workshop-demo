@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import org.jetbrains.research.refactoringDemoPlugin.util.countLines
-import org.jetbrains.research.refactoringDemoPlugin.util.extractClasses
+import org.jetbrains.research.refactoringDemoPlugin.util.extractJavaClasses
 import java.awt.BorderLayout
 import javax.swing.JPanel
 import javax.swing.table.DefaultTableModel
@@ -20,8 +20,8 @@ class MyToolWindowContent(private val project: Project) {
         val tableModel = DefaultTableModel()
         val table = JBTable(tableModel)
         tableModel.addColumn("Class Name")
-        tableModel.addColumn("Field Number")
-        tableModel.addColumn("Method Number")
+        tableModel.addColumn("Field Count")
+        tableModel.addColumn("Method Count")
         tableModel.addColumn("Lines Of Code")
         tableModel.addColumn("Number Of Children")
 
@@ -30,10 +30,10 @@ class MyToolWindowContent(private val project: Project) {
             tableModel.addRow(
                 arrayOf(
                     e.key,
-                    e.value.fieldsNumber,
-                    e.value.methodNumber,
+                    e.value.fieldCount,
+                    e.value.methodCount,
                     e.value.loc,
-                    e.value.noc,
+                    e.value.subclassCount,
                 )
             )
         }
@@ -43,16 +43,18 @@ class MyToolWindowContent(private val project: Project) {
 
     private fun calculateStatisticsForClasses(): HashMap<String, ClassStatistics> {
         val results: HashMap<String, ClassStatistics> = hashMapOf()
-        val classes = extractClasses(project)
+        val classes = extractJavaClasses(project)
         classes.forEach { clazz ->
-            val statistics =
-                ClassStatistics(
-                    clazz.fields.size,
-                    clazz.methods.size,
-                    countLines(clazz.text),
-                    clazz.children.size
-                )
-            results[clazz.qualifiedName!!] = statistics
+            if (clazz.qualifiedName != null) {
+                val statistics =
+                    ClassStatistics(
+                        clazz.fields.size,
+                        clazz.methods.size,
+                        countLines(clazz.text),
+                        clazz.children.size
+                    )
+                results[clazz.qualifiedName!!] = statistics
+            }
         }
         return results
     }
