@@ -14,6 +14,7 @@ import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiMethodCallExpression
 import com.intellij.refactoring.move.moveInstanceMethod.MoveInstanceMethodDialog
 import com.siyeh.ig.psiutils.LibraryUtil
+import org.jetbrains.research.refactoringDemoPlugin.DemoPluginBundle
 import org.jetbrains.research.refactoringDemoPlugin.util.getAvailableVariables
 
 /**
@@ -61,7 +62,7 @@ class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
                         if (canMoveInstanceMethod(method, clazz)) {
                             holder?.registerProblem(
                                 method,
-                                "Method uses methods of another class more than those of the enclosing class.",
+                                DemoPluginBundle.message("problem.holder.move.method.description"),
                                 MoveMethodFix(method, clazz)
                             )
                         }
@@ -82,10 +83,9 @@ class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
 
     @Suppress("StatefulEp")
     class MoveMethodFix(private val methodToMove: PsiMethod, private val destinationClass: PsiClass) : LocalQuickFix {
-        private val quickFixName = "Move method to a more related class"
 
         override fun getFamilyName(): String {
-            return quickFixName
+            return DemoPluginBundle.message("quick.fix.move.method.name")
         }
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
@@ -100,7 +100,7 @@ class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
                 return
             }
             val dialog = MoveInstanceMethodDialog(methodToMove, available)
-            dialog.title = "Move Method " + methodToMove.name
+            dialog.title = DemoPluginBundle.message("quick.fix.move.method.dialog.title") + methodToMove.name
             ApplicationManager.getApplication().invokeAndWait { dialog.show() }
         }
     }
