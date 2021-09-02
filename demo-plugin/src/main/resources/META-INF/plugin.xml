@@ -16,6 +16,10 @@
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="org.jetbrains.research.refactoringDemoPlugin.featureEnvy.MyFeatureEnvyInspection"/>
+
+        <editorNotificationProvider
+                id="LicenseFileEditorNotificationProvider"
+                implementation="org.jetbrains.research.refactoringDemoPlugin.modelInference.LicenseFileEditorNotificationProvider"/>
     </extensions>
 
 </idea-plugin>

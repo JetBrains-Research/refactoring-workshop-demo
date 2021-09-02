@@ -1,0 +1,37 @@
+package org.jetbrains.research.refactoringDemoPlugin.modelInference
+
+import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.editor.Document
+import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.fileEditor.FileEditor
+import com.intellij.openapi.module.ModuleUtilCore
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Key
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.ui.EditorNotificationPanel
+import com.intellij.ui.EditorNotifications
+
+class LicenseFileEditorNotificationProvider : EditorNotifications.Provider<EditorNotificationPanel>() {
+
+    companion object {
+        private val KEY: Key<EditorNotificationPanel> = Key.create("LicenseFile")
+    }
+
+    override fun getKey(): Key<EditorNotificationPanel> = KEY
+
+    override fun createNotificationPanel(
+        file: VirtualFile,
+        fileEditor: FileEditor,
+        project: Project
+    ): EditorNotificationPanel? {
+        ModuleUtilCore.findModuleForFile(file, project) ?: return null
+        val licenseNotificationPanel = EditorNotificationPanel()
+        val licenseDocument: Document = ReadAction.compute<Document, Throwable> {
+            FileDocumentManager.getInstance().getDocument(file)!!
+        }
+        val licenseDetector = LicenseDetector()
+        val license = licenseDetector.detectLicense(licenseDocument.text)
+        licenseNotificationPanel.text = "The module license is $license"
+        return licenseNotificationPanel
+    }
+}

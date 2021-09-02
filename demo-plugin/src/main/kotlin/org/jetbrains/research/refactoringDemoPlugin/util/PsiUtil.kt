@@ -2,10 +2,10 @@ package org.jetbrains.research.refactoringDemoPlugin.util
 
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiClassType
-import com.intellij.psi.PsiMethod
-import com.intellij.psi.PsiVariable
-import com.intellij.psi.PsiParameter
 import com.intellij.psi.PsiField
+import com.intellij.psi.PsiMethod
+import com.intellij.psi.PsiParameter
+import com.intellij.psi.PsiVariable
 
 /*
     Searches for variables (fields or parameters) of the type the method is supposed to be moved to.
