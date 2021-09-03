@@ -25,6 +25,12 @@ class LicenseFileEditorNotificationProvider : EditorNotifications.Provider<Edito
         project: Project
     ): EditorNotificationPanel? {
         ModuleUtilCore.findModuleForFile(file, project) ?: return null
+        val licenseFileNamePattern = Regex(
+            "(LICENSE.*|LEGAL.*|COPYING.*|COPYLEFT.*|COPYRIGHT.*|UNLICENSE.*|" +
+                    "MIT.*|BSD.*|GPL.*|LGPL.*|APACHE.*)(\\.txt|\\.md|\\.html)?", RegexOption.IGNORE_CASE)
+        if (!licenseFileNamePattern.matches(file.name)) {
+            return null
+        }
         val licenseNotificationPanel = EditorNotificationPanel()
         val licenseDocument: Document = ReadAction.compute<Document, Throwable> {
             FileDocumentManager.getInstance().getDocument(file)!!
