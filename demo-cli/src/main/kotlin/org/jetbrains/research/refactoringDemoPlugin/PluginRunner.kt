@@ -39,12 +39,12 @@ class JavaDocExtractor : CliktCommand() {
         val gson = GsonBuilder().setPrettyPrinting().create()
         val fileWriter = FileWriter(output, true)
         fileWriter.write("[")
-        val files = extractFiles(project)
+        val files = extractJavaFiles(project)
         files.forEach { file ->
-            file.classes.forEach { c ->
-                c.methods.forEach { m ->
-                    val comment = m.docComment?.text ?: ""
-                    val datasetItem = DatasetItem(m.name, comment)
+            file.classes.forEach { clazz ->
+                clazz.methods.forEach { method ->
+                    val comment = method.docComment?.text ?: ""
+                    val datasetItem = DatasetItem(method.name, comment)
                     val json = gson.toJson(datasetItem)
                     fileWriter.write("$json, \n")
                 }
@@ -57,12 +57,14 @@ class JavaDocExtractor : CliktCommand() {
     /**
      * Extracts Java files in the project.
      */
-    private fun extractFiles(project: Project): List<PsiJavaFile> {
+    private fun extractJavaFiles(project: Project): List<PsiJavaFile> {
         val javaFiles: MutableList<PsiJavaFile> = ArrayList()
         ProjectFileIndex.SERVICE.getInstance(project).iterateContent { file: VirtualFile? ->
-            val psiFile = PsiManager.getInstance(project).findFile(file!!)
-            if (psiFile is PsiJavaFile && !psiFile.isDirectory() && fileTypeName == psiFile.getFileType().name) {
-                javaFiles.add(psiFile)
+            if (file != null) {
+                val psiFile = PsiManager.getInstance(project).findFile(file)
+                if (psiFile is PsiJavaFile && !psiFile.isDirectory() && fileTypeName == psiFile.getFileType().name) {
+                    javaFiles.add(psiFile)
+                }
             }
             true
         }

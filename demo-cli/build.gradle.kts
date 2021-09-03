@@ -17,7 +17,7 @@ tasks {
             "java.base/jdk.internal.vm=ALL-UNNAMED",
             "-Djdk.module.illegalAccess.silent=true"
         )
-        maxHeapSize = "20g"
+        maxHeapSize = "2g"
     }
 
     register("runDemoPluginCLI") {
