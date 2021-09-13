@@ -23,8 +23,8 @@ class MyToolWindowContent(private val project: Project) {
         tableModel.addColumn(DemoPluginBundle.message("tool.window.class.name"))
         tableModel.addColumn(DemoPluginBundle.message("tool.window.field.count"))
         tableModel.addColumn(DemoPluginBundle.message("tool.window.method.count"))
-        tableModel.addColumn(DemoPluginBundle.message("tool.window.subclass.count"))
         tableModel.addColumn(DemoPluginBundle.message("tool.window.lines.of.code"))
+        tableModel.addColumn(DemoPluginBundle.message("tool.window.subclass.count"))
 
         val entries: HashMap<String, ClassStatistics> = calculateStatisticsForClasses()
         entries.forEach { e ->
