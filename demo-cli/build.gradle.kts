@@ -4,6 +4,14 @@ version = rootProject.version
 dependencies {
     implementation("com.github.ajalt:clikt:2.8.0")
     implementation("com.google.code.gson:gson:2.7")
+    val utilitiesProjectName = "org.jetbrains.research.pluginUtilities"
+    dependencies {
+        implementation("$utilitiesProjectName:plugin-utilities-core") {
+            version {
+                branch = "main"
+            }
+        }
+    }
 }
 
 tasks {
