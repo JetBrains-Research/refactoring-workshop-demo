@@ -2,6 +2,7 @@ package org.jetbrains.research.refactoringDemoPlugin.modelInference.license
 
 object BSD_3_Clause : License {
     override val name: String = "BSD 3-Clause \"New\" or \"Revised\" License"
+
     override val fullText: String =
         """
                 Copyright (c) <year> <owner>. All rights reserved.

@@ -2,6 +2,7 @@ package org.jetbrains.research.refactoringDemoPlugin.modelInference.license
 
 object MIT : License {
     override val name: String = "MIT License"
+
     override val fullText: String =
         """
                 MIT License

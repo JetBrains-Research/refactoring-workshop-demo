@@ -12,7 +12,6 @@ import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotifications
 
 class LicenseFileEditorNotificationProvider : EditorNotifications.Provider<EditorNotificationPanel>() {
-
     companion object {
         private val KEY: Key<EditorNotificationPanel> = Key.create("LicenseFile")
     }

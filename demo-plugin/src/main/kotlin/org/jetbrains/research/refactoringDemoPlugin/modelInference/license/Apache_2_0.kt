@@ -2,6 +2,7 @@ package org.jetbrains.research.refactoringDemoPlugin.modelInference.license
 
 object Apache_2_0 : License {
     override val name: String = "Apache License 2.0"
+
     override val fullText: String =
         """
                 Apache License
