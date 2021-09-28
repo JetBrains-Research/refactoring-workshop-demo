@@ -26,7 +26,7 @@ class PluginRunner : ApplicationStarter {
 
 class JavaDocExtractor : CliktCommand() {
     private val input by argument(help = "Path to the project").file(mustExist = true, canBeFile = false)
-    private val output by argument(help = "Output directory").file(canBeFile = false)
+    private val output by argument(help = "Output directory").file(canBeFile = true)
 
     private val fileTypeName = "JAVA"
 
@@ -38,19 +38,18 @@ class JavaDocExtractor : CliktCommand() {
         val project = ProjectUtil.openOrImport(input.path, null, true) ?: return
         val gson = GsonBuilder().setPrettyPrinting().create()
         val fileWriter = FileWriter(output, true)
-        fileWriter.write("[")
         val files = extractJavaFiles(project)
+        val datasetItems: ArrayList<DatasetItem> = arrayListOf()
         files.forEach { file ->
             file.classes.forEach { clazz ->
                 clazz.methods.forEach { method ->
                     val comment = method.docComment?.text ?: ""
-                    val datasetItem = DatasetItem(method.name, comment)
-                    val json = gson.toJson(datasetItem)
-                    fileWriter.write("$json, \n")
+                    datasetItems.add(DatasetItem(method.name, comment))
                 }
             }
         }
-        fileWriter.write("]")
+        val resultJson = gson.toJson(datasetItems)
+        fileWriter.write(resultJson)
         exitProcess(0)
     }
 
