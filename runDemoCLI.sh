@@ -7,4 +7,4 @@ if uname -s | grep -iq cygwin ; then
     PWD=$(cygpath -w "$PWD")
 fi
 
-"$DIR/gradlew" -p "$DIR" runDemoPluginCLI -Pinput="$1" -Poutput="$2"
+"$DIR/gradlew" -p "$DIR" runDemoPluginCLI -Prunner=DemoPluginCLI -Pinput="$1" -Poutput="$2"

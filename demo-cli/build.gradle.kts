@@ -14,11 +14,13 @@ dependencies {
     }
 }
 
-tasks {
-    runIde {
-        val input: String? by project
-        val output: String? by project
-        args = listOfNotNull("DemoPluginCLI", input, output)
+open class IOCliTask : org.jetbrains.intellij.tasks.RunIdeTask() {
+    @get:Input
+    val runner: String? by project
+    val input: String? by project
+    val output: String? by project
+
+    init {
         jvmArgs = listOf(
             "-Djava.awt.headless=true",
             "--add-exports",
@@ -26,9 +28,18 @@ tasks {
             "-Djdk.module.illegalAccess.silent=true"
         )
         maxHeapSize = "2g"
+        standardInput = System.`in`
+        standardOutput = System.`out`
     }
+}
 
-    register("runDemoPluginCLI") {
-        dependsOn(runIde)
+tasks {
+    register<IOCliTask>("runDemoPluginCLI") {
+        dependsOn("buildPlugin")
+        args = listOfNotNull(
+            runner,
+            input?.let { it },
+            output?.let { it }
+        )
     }
 }
