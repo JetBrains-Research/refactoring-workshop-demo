@@ -1,8 +1,10 @@
 package org.jetbrains.research.refactoringDemoPlugin.util
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileFilter
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiClassType
 import com.intellij.psi.PsiField
@@ -44,17 +46,28 @@ fun concatFiltered(
  */
 fun extractJavaClasses(project: Project): MutableList<PsiClass> {
     val classes: MutableList<PsiClass> = ArrayList()
-
-    ProjectFileIndex.SERVICE.getInstance(project).iterateContent { file: VirtualFile? ->
-        val psiFile = PsiManager.getInstance(project).findFile(file!!)
-        if (psiFile is PsiJavaFile && !psiFile.isDirectory() &&
-            "JAVA" == psiFile.getFileType().name
-        ) {
-            classes.addAll(psiFile.classes)
-        }
-        true
+    val projectDir = project.guessProjectDir()
+    if (projectDir != null) {
+        ProjectFileIndex.SERVICE.getInstance(project)
+            .iterateContentUnderDirectory(
+                projectDir,
+                { file: VirtualFile ->
+                    val psiFile = PsiManager.getInstance(project).findFile(file)
+                    if (psiFile is PsiJavaFile) {
+                        classes.addAll(psiFile.classes)
+                    }
+                    true
+                },
+                createFileFilter()
+            )
     }
     return classes
+}
+
+private fun createFileFilter(): VirtualFileFilter {
+    return VirtualFileFilter { file: VirtualFile ->
+        file.name.endsWith(".java")
+    }
 }
 
 /*
