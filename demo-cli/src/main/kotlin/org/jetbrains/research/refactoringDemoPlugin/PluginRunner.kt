@@ -6,8 +6,10 @@ import com.github.ajalt.clikt.parameters.types.file
 import com.google.gson.GsonBuilder
 import com.intellij.openapi.application.ApplicationStarter
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileFilter
 import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.PsiManager
 import org.jetbrains.research.pluginUtilities.openRepository.getKotlinJavaRepositoryOpener
@@ -48,7 +50,6 @@ class JavaDocExtractor : CliktCommand() {
         preprocessor.preprocessDatasetInplace(input.toPath().toFile())
         getSubdirectories(input.toPath()).forEach { repositoryRoot ->
             repositoryOpener.openRepository(repositoryRoot.toFile()) { project ->
-                println("Project $project opened")
                 val files = extractJavaFiles(project)
                 files.forEach { file ->
                     file.classes.forEach { clazz ->
@@ -68,18 +69,26 @@ class JavaDocExtractor : CliktCommand() {
     /**
      * Extracts Java files in the project.
      */
-    private fun extractJavaFiles(project: Project): List<PsiJavaFile> {
-        val javaFiles: MutableList<PsiJavaFile> = ArrayList()
-        ProjectFileIndex.SERVICE.getInstance(project).iterateContent { file: VirtualFile? ->
-            if (file != null) {
-                val psiFile = PsiManager.getInstance(project).findFile(file)
-                if (psiFile is PsiJavaFile && !psiFile.isDirectory() && fileTypeName == psiFile.getFileType().name) {
-                    javaFiles.add(psiFile)
-                }
-            }
-            true
+    private fun extractJavaFiles(project: Project): MutableList<PsiJavaFile> {
+        val javaFiles: MutableList<PsiJavaFile> = java.util.ArrayList()
+        val projectDir = project.guessProjectDir()
+        if (projectDir != null) {
+            ProjectFileIndex.SERVICE.getInstance(project)
+                .iterateContentUnderDirectory(projectDir, { file: VirtualFile ->
+                    val psiFile = PsiManager.getInstance(project).findFile(file)
+                    if (psiFile is PsiJavaFile) {
+                        javaFiles.add(psiFile)
+                    }
+                    true
+                }, createFileFilter())
         }
         return javaFiles
+    }
+
+    private fun createFileFilter(): VirtualFileFilter {
+        return VirtualFileFilter { file: VirtualFile ->
+            file.name.endsWith(".java")
+        }
     }
 
     private fun getSubdirectories(path: Path): List<Path> {
