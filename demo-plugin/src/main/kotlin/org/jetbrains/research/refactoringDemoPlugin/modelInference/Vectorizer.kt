@@ -3,8 +3,8 @@ package org.jetbrains.research.refactoringDemoPlugin.modelInference
 import kotlin.math.max
 
 /**
- * Transforms text into vector of dimension = size of vocabulary size.
- * @property vocabulary vocabulary which used to vectorize text.
+ * Transforms the text into a vector of dimension equal to the size of the vocabulary.
+ * @property vocabulary vocabulary which is used to vectorize the text.
  *
  * See [Sorrel plugin source code](https://github.com/JetBrains-Research/sorrel).
  */
@@ -12,9 +12,9 @@ class Vectorizer(val vocabulary: List<String>) {
     val vectorDim = vocabulary.size
 
     /**
-     * Vectorizes (counting vectorization) given text into vector_dim size vector +
-     * add length of text as last component of vector.
-     * @param text text to be vectorized.
+     * Vectorizes (counting vectorization) given text into a vector_dim size vector and
+     * adds the length of the text as a last component of the vector.
+     * @param text text to vectorize.
      * @return IntArray with vector_dim + 1 size (vector).
      */
     fun vectorizeWithLength(text: String): IntArray {
@@ -24,12 +24,12 @@ class Vectorizer(val vocabulary: List<String>) {
     }
 
     /**
-     * Vectorizes (counting vectorization) given text into vector_dim size vector.
-     * @param text text to be vectorized.
+     * Vectorizes (counting vectorization) given text into a vector_dim size vector.
+     * @param text text to vectorize.
      * @return IntArray with vector_dim size (vector).
      */
     fun vectorize(text: String): IntArray {
-        // Initialize empty vector for text
+        // Initialize empty vector for the text
         val textVector = IntArray(vectorDim)
         val featureCount = HashMap<List<String>, Int>()
         val textList = text.split(" ")
@@ -42,7 +42,7 @@ class Vectorizer(val vocabulary: List<String>) {
             max(maxFeatureLength, feature.size).also { maxFeatureLength = it }
         }
 
-        // Going through all possible lengths and count features
+        // Go through all possible lengths and count features
         for (length in 1 until maxFeatureLength) {
             for (window in textList.windowed(length)) {
                 if (window in featureCount.keys) {

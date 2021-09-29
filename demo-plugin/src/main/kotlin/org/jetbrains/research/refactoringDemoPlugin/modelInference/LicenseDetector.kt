@@ -18,7 +18,7 @@ import kotlin.time.ExperimentalTime
  * See [Sorrel plugin source code](https://github.com/JetBrains-Research/sorrel).
  */
 class LicenseDetector {
-    // Classes for decode numeric predictions
+    // Classes for decoding numeric predictions
     private val classes: List<String> = LicenseDetector::class.java.getResourceAsStream(
         "/model/license_level_classes_v2.txt"
     ).reader().readLines()
@@ -30,7 +30,7 @@ class LicenseDetector {
         "BSD-3-Clause" to BSD_3_Clause,
     )
 
-    // Model & vectorizer for detection licenses on project level initializiation
+    // Model & vectorizer for detection of licenses on project level initializiation
     @OptIn(ExperimentalTime::class)
     private val mlModel: Model = Model.load(
         LicenseDetector::class.java.getResource("/model/license_level_model_v2.onnx").readBytes()
@@ -41,7 +41,7 @@ class LicenseDetector {
         ).reader().readLines()
     )
 
-    // Number of features that model accepts
+    // Number of features the model accepts
     private val numFeatures = vectorizer.vectorDim + 1
     private val THRESHOLD = 0.8
 
@@ -49,8 +49,8 @@ class LicenseDetector {
     private val inputShape = listOf(numFeatures).toIntArray()
 
     /**
-     * From given text detects license class.
-     * @param text text from which license to be detected.
+     * Detects license class for a given text.
+     * @param  text for license detection
      * @return object of detected License.
      */
     @OptIn(ExperimentalTime::class)
@@ -82,9 +82,9 @@ class LicenseDetector {
     }
 
     /**
-     * Removes all non-alphanumeric characters and extra non-printable symbols from text.
+     * Removes all non-alphanumeric characters and extra non-printable symbols from the text.
      * Also transforms characters to lowercase.
-     * @param text the text to be filtered.
+     * @param text the text to filter.
      * @return filtered text.
      */
     private fun filterText(text: String): String {
