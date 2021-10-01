@@ -73,4 +73,24 @@ private fun createFileFilter(): VirtualFileFilter {
 /*
     Calculates the number of lines in the text.
  */
-fun countLines(classText: String) = classText.toCharArray().count { it == '\n' || it == '\r' }
+fun countLines(text: String?): Int {
+    if (text == null) {
+        return 0
+    }
+    var lines = 0
+    var onEmptyLine = true
+    text.toCharArray().forEach { aChar ->
+        if (aChar == '\n' || aChar == '\r') {
+            if (!onEmptyLine) {
+                lines++
+                onEmptyLine = true
+            }
+        } else if (aChar != ' ' && aChar != '\t') {
+            onEmptyLine = false
+        }
+    }
+    if (!onEmptyLine) {
+        lines++
+    }
+    return lines
+}

@@ -24,7 +24,6 @@ class MyToolWindowContent(private val project: Project) {
         tableModel.addColumn(DemoPluginBundle.message("tool.window.field.count"))
         tableModel.addColumn(DemoPluginBundle.message("tool.window.method.count"))
         tableModel.addColumn(DemoPluginBundle.message("tool.window.lines.of.code"))
-        tableModel.addColumn(DemoPluginBundle.message("tool.window.subclass.count"))
 
         val entries: HashMap<String, ClassStatistics> = calculateStatisticsForClasses()
         entries.forEach { e ->
@@ -33,8 +32,7 @@ class MyToolWindowContent(private val project: Project) {
                     e.key,
                     e.value.fieldCount,
                     e.value.methodCount,
-                    e.value.loc,
-                    e.value.subclassCount,
+                    e.value.loc
                 )
             )
         }
@@ -51,8 +49,7 @@ class MyToolWindowContent(private val project: Project) {
                     ClassStatistics(
                         clazz.fields.size,
                         clazz.methods.size,
-                        countLines(clazz.text),
-                        clazz.children.size
+                        countLines(clazz.text)
                     )
                 results[clazz.qualifiedName!!] = statistics
             }
