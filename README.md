@@ -30,7 +30,7 @@ Open the terminal and execute the following commands:
 
 `cd /refactoring-workshop-demo/`
 
-`./extractJavaDocs.sh <absolute path to the project> <absolute path to the output file>`
+`./runDemoPluginCLI.sh <absolute path to the project> <absolute path to the output file>`
 
 ## Use cases
 
@@ -54,7 +54,7 @@ To start the mining JavaDoc comments, open terminal and execute the following co
 
 `cd /refactoring-workshop-demo/`
 
-`./extractJavaDocs.sh <absolute path to the project> <absolute path to the output file>`
+`./runDemoPluginCLI.sh <absolute path to the project> <absolute path to the output file>`
 
 This template can be easily modified to collect almost any code entity by changing the analyzed PSI nodes.
 
@@ -64,7 +64,7 @@ To see how the plugin works, open any project in IntelliJ IDEA and go to the lic
 The plugin supports the following three licenses: `Apache-2.0`, `MIT`, and `BSD-3-Clause`.
 Then, the plugin will show a tiny message at the top of the editor with the name of the detected license.
 
-![License notification panel](figures/license.png)
+<img src="figures/license.png" alt="License notification panel" width="600">
 
 The source code of this use case can be used to understand how to inference an ONNX model in your tool.
 
@@ -72,7 +72,7 @@ The source code of this use case can be used to understand how to inference an O
 
 The  plugin analyzes the currently opened file, detects the Feature Envy code smell and suggests the user to perform a Move Method refactoring and move such a method to the more appropriate class.
 
-![Feature Envy inspection](figures/featureEnvy.png)
+<img src="figures/featureEnvy.png" alt="Feature Envy inspection" width="600">
 
 This template can be the foundation for almost any plugin that targets refactorings, since it showcases how to use the IntelliJ Platform's APIs to automatically carry out refactorings without writing everything manually.
 
@@ -81,7 +81,7 @@ This template can be the foundation for almost any plugin that targets refactori
 The plugin extracts all Java classes, analyzes PSI to calculate several basic metrics: number of fields, number of methods, and lines of code.
 Then, the plugin shows the results in the `Projects Statistics` tool window that is located in the bottom right corner of the IDE.
 
-![Statistics tool window](figures/projectStatistics.png)
+<img src="figures/projectStatistics.png" alt="Statistics tool window" width="800">
 
 This use case introduces such a basic and important UI element as the tool window, which can be used in almost any plugin to display the relevant information.
 
