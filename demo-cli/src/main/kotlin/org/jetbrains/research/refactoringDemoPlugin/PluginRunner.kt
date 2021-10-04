@@ -34,8 +34,6 @@ class JavaDocExtractor : CliktCommand() {
     private val input by argument(help = "Path to the project").file(mustExist = true, canBeFile = false)
     private val output by argument(help = "Output directory").file(canBeFile = true)
 
-    private val fileTypeName = "JAVA"
-
     /**
      * Walks through files in the project, extracts all methods in each file
      * and saves the method name and the corresponding JavaDoc to the output file.
@@ -74,13 +72,17 @@ class JavaDocExtractor : CliktCommand() {
         val projectDir = project.guessProjectDir()
         if (projectDir != null) {
             ProjectFileIndex.SERVICE.getInstance(project)
-                .iterateContentUnderDirectory(projectDir, { file: VirtualFile ->
-                    val psiFile = PsiManager.getInstance(project).findFile(file)
-                    if (psiFile is PsiJavaFile) {
-                        javaFiles.add(psiFile)
-                    }
-                    true
-                }, createFileFilter())
+                .iterateContentUnderDirectory(
+                    projectDir,
+                    { file: VirtualFile ->
+                        val psiFile = PsiManager.getInstance(project).findFile(file)
+                        if (psiFile is PsiJavaFile) {
+                            javaFiles.add(psiFile)
+                        }
+                        true
+                    },
+                    createFileFilter()
+                )
         }
         return javaFiles
     }
