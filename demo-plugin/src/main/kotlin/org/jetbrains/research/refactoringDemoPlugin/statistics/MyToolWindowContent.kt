@@ -1,5 +1,6 @@
 package org.jetbrains.research.refactoringDemoPlugin.statistics
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
@@ -18,26 +19,30 @@ class MyToolWindowContent(private val project: Project) {
     }
 
     private fun createContent() {
-        val tableModel = DefaultTableModel()
-        val table = JBTable(tableModel)
-        tableModel.addColumn(DemoPluginBundle.message("tool.window.class.name"))
-        tableModel.addColumn(DemoPluginBundle.message("tool.window.field.count"))
-        tableModel.addColumn(DemoPluginBundle.message("tool.window.method.count"))
-        tableModel.addColumn(DemoPluginBundle.message("tool.window.lines.of.code"))
+        ApplicationManager.getApplication().invokeAndWait {
+            ApplicationManager.getApplication().runWriteAction {
+                val tableModel = DefaultTableModel()
+                val table = JBTable(tableModel)
+                tableModel.addColumn(DemoPluginBundle.message("tool.window.class.name"))
+                tableModel.addColumn(DemoPluginBundle.message("tool.window.field.count"))
+                tableModel.addColumn(DemoPluginBundle.message("tool.window.method.count"))
+                tableModel.addColumn(DemoPluginBundle.message("tool.window.lines.of.code"))
 
-        val entries: HashMap<String, ClassStatistics> = calculateStatisticsForClasses()
-        entries.forEach { e ->
-            tableModel.addRow(
-                arrayOf(
-                    e.key,
-                    e.value.fieldCount,
-                    e.value.methodCount,
-                    e.value.loc
-                )
-            )
+                val entries: HashMap<String, ClassStatistics> = calculateStatisticsForClasses()
+                entries.forEach { e ->
+                    tableModel.addRow(
+                        arrayOf(
+                            e.key,
+                            e.value.fieldCount,
+                            e.value.methodCount,
+                            e.value.loc
+                        )
+                    )
+                }
+                val scrollPane = JBScrollPane(table)
+                myToolWindowContent.add(scrollPane, BorderLayout.CENTER)
+            }
         }
-        val scrollPane = JBScrollPane(table)
-        myToolWindowContent.add(scrollPane, BorderLayout.CENTER)
     }
 
     private fun calculateStatisticsForClasses(): HashMap<String, ClassStatistics> {
