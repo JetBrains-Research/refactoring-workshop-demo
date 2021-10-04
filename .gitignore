@@ -2,3 +2,4 @@
 /.gradle/
 /build/
 demo-plugin/build/
+demo-cli/build/
