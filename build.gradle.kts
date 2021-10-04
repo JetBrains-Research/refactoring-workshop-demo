@@ -21,10 +21,12 @@ allprojects {
     repositories {
         mavenCentral()
         jcenter()
+        maven("https://packages.jetbrains.team/maven/p/ki/maven")
     }
 
     dependencies {
         implementation(kotlin("stdlib-jdk8"))
+        implementation("io.kinference:inference:0.1.4")
     }
 
     intellij {

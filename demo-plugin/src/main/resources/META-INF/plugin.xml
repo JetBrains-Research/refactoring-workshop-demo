@@ -17,6 +17,11 @@
                          level="WARNING"
                          implementationClass="org.jetbrains.research.refactoringDemoPlugin.featureEnvy.MyFeatureEnvyInspection"/>
 
+
+        <editorNotificationProvider
+                id="LicenseFileEditorNotificationProvider"
+                implementation="org.jetbrains.research.refactoringDemoPlugin.modelInference.LicenseFileEditorNotificationProvider"/>
+      
         <toolWindow id="Project statistics" secondary="true" anchor="bottom"
                     factoryClass="org.jetbrains.research.refactoringDemoPlugin.statistics.MyToolWindowFactory"
         />
