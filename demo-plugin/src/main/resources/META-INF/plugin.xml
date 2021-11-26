@@ -3,28 +3,21 @@
     <name>Refactoring Demo</name>
     <vendor>JetBrains Research</vendor>
 
-    <depends>com.intellij.java</depends>
-    <depends>org.jetbrains.kotlin</depends>
+    <description><![CDATA[
+    Demo plugin that demonstrates basic the IntelliJ Platform features.
+    ]]></description>
+
     <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <localInspection language="JAVA"
-                         displayName="Feature envy"
-                         groupName="Feature envy"
-                         enabledByDefault="true"
-                         level="WARNING"
-                         implementationClass="org.jetbrains.research.refactoringDemoPlugin.featureEnvy.MyFeatureEnvyInspection"/>
-
-
-        <editorNotificationProvider
-                id="LicenseFileEditorNotificationProvider"
-                implementation="org.jetbrains.research.refactoringDemoPlugin.modelInference.LicenseFileEditorNotificationProvider"/>
-      
         <toolWindow id="Project statistics" secondary="true" anchor="bottom"
                     factoryClass="org.jetbrains.research.refactoringDemoPlugin.statistics.MyToolWindowFactory"
         />
     </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
 
 </idea-plugin>
