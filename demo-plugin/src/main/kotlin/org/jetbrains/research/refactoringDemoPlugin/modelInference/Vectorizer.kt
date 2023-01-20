@@ -59,5 +59,4 @@ class Vectorizer(private val vocabulary: List<String>) {
 
         return textVector
     }
-
 }

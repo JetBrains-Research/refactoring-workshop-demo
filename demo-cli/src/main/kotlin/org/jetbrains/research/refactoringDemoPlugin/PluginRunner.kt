@@ -57,6 +57,7 @@ class JavaDocExtractor : CliktCommand() {
                         }
                     }
                 }
+                true
             }
         }
         val resultJson = gson.toJson(datasetItems)

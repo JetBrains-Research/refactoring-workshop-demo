@@ -50,7 +50,7 @@ class LicenseDetector {
 
     /**
      * Detects license class for a given text.
-     * @param  text for license detection
+     * @param text for license detection
      * @return object of detected License.
      */
     @OptIn(ExperimentalTime::class)
