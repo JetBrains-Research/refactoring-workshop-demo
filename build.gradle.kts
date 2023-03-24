@@ -25,7 +25,9 @@ allprojects {
     }
 
     dependencies {
-        implementation("io.kinference:inference-core:0.2.11")
+        implementation("io.kinference:inference-core-jvm:0.2.11"){
+            exclude("org.slf4j")
+        }
         implementation("org.jetbrains.research:plugin-utilities-core:1.0")
         implementation("org.jetbrains.research:plugin-utilities-test:1.0")
     }
