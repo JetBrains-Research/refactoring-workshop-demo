@@ -1,3 +1,6 @@
+[![JetBrains Research](https://jb.gg/badges/research.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
+[![Gradle Build](https://github.com/JetBrains-Research/refactoring-workshop-demo/actions/workflows/gradle-build.yml/badge.svg)](https://github.com/JetBrains-Research/refactoring-workshop-demo/actions/workflows/gradle-build.yml)
+
 # Refactoring Workshop Demo
 
 The project aims to demonstrate how the IntelliJ Platform could be useful for researchers in several use cases.
