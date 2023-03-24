@@ -9,6 +9,7 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.java</depends>
+    <depends>org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <localInspection language="JAVA"
@@ -23,7 +24,7 @@
                 implementation="org.jetbrains.research.refactoringDemoPlugin.modelInference.LicenseFileEditorNotificationProvider"/>
 
         <toolWindow id="Project statistics" secondary="true" anchor="bottom"
-                    factoryClass="org.jetbrains.research.refactoringDemoPlugin.statistics.MyToolWindowFactory"
+                    factoryClass="org.jetbrains.research.refactoringDemoPlugin.statistics.StatisticsToolWindowFactory"
         />
     </extensions>
 

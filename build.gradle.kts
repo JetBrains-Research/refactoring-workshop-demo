@@ -25,7 +25,7 @@ allprojects {
     }
 
     dependencies {
-        implementation("io.kinference:inference-core-jvm:0.2.11"){
+        implementation("io.kinference:inference-core-jvm:0.2.12") {
             exclude("org.slf4j")
         }
         implementation("org.jetbrains.research:plugin-utilities-core:1.0")
@@ -42,7 +42,7 @@ allprojects {
 
     ktlint {
         enableExperimentalRules.set(true)
-        disabledRules.set(setOf("no-wildcard-imports"))
+        disabledRules.set(setOf("no-wildcard-imports", "import-ordering"))
         filter {
             exclude("**/resources/**")
         }

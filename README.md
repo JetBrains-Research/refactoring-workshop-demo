@@ -8,7 +8,7 @@ samples in the [IntelliJ Platform SDK Code Samples repository](https://github.co
 
 ## How to install
 
-The plugin requires Java 11 and IntelliJ IDEA of version 2021.2 or higher to work.
+The plugin requires Java 17 and IntelliJ IDEA of version 2022.3.3 or higher to work.
 
 To install the plugin:
 
@@ -78,7 +78,7 @@ This template can be the foundation for almost any plugin that targets refactori
 
 ### Visualizing information
 
-The plugin extracts all Java classes, analyzes PSI to calculate several basic metrics: number of fields, number of methods, and lines of code.
+The plugin extracts all Kotlin and Java classes, analyzes PSI to calculate several basic metrics: number of fields, number of methods, and lines of code.
 Then, the plugin shows the results in the `Projects Statistics` tool window that is located in the bottom right corner of the IDE.
 
 <img src="figures/projectStatistics.png" alt="Statistics tool window" width="800">
