@@ -12,6 +12,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotifications
 import org.jetbrains.research.refactoringDemoPlugin.modelInference.license.License
+import kotlinx.coroutines.runBlocking
 
 class LicenseFileEditorNotificationProvider : EditorNotifications.Provider<EditorNotificationPanel>() {
     companion object {
@@ -39,11 +40,12 @@ class LicenseFileEditorNotificationProvider : EditorNotifications.Provider<Edito
             FileDocumentManager.getInstance().getDocument(file)!!
         }
         val licenseDetector = LicenseDetector()
-        val license: License? = ApplicationManager.getApplication().runReadAction<License?> {
+        val license: License? = runBlocking {
             licenseDetector.detectLicense(licenseDocument.text)
         }
 //        val license = licenseDetector.detectLicense(licenseDocument.text)
         val licenseName = license?.name ?: "unknown"
+//        val licenseName = "unknown"
         licenseNotificationPanel.text = "The module license is $licenseName"
         return licenseNotificationPanel
     }
