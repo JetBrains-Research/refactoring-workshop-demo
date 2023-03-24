@@ -1,10 +1,10 @@
 package org.jetbrains.research.refactoringDemoPlugin.modelInference
 
-import io.kinference.data.map.ONNXMap
-import io.kinference.data.seq.ONNXSequence
-import io.kinference.data.tensors.Tensor
-import io.kinference.data.tensors.asTensor
-import io.kinference.model.Model
+import io.kinference.core.KIEngine
+import io.kinference.core.data.tensor.KITensor
+import io.kinference.core.data.tensor.asTensor
+import io.kinference.data.ONNXMap
+import io.kinference.data.ONNXSequence
 import io.kinference.ndarray.arrays.FloatNDArray
 import io.kinference.ndarray.arrays.LongNDArray
 import java.util.Locale
@@ -30,11 +30,6 @@ class LicenseDetector {
         "BSD-3-Clause" to BSD_3_Clause,
     )
 
-    // Model & vectorizer for detection of licenses on project level initializiation
-    @OptIn(ExperimentalTime::class)
-    private val mlModel: Model = Model.load(
-        LicenseDetector::class.java.getResource("/model/license_level_model_v2.onnx").readBytes()
-    )
     private val vectorizer = Vectorizer(
         LicenseDetector::class.java.getResourceAsStream(
             "/model/license_level_model_words_v2.txt"
@@ -54,25 +49,30 @@ class LicenseDetector {
      * @return object of detected License.
      */
     @OptIn(ExperimentalTime::class)
-    fun detectLicense(text: String): License? {
+    suspend fun detectLicense(text: String): License? {
+        // Model & vectorizer for detection of licenses on project level initializiation
+        val mlModel = KIEngine.loadModel(
+            LicenseDetector::class.java.getResource("/model/license_level_model_v2.onnx").readBytes()
+        )
         // Convert text into vector
         val filteredText = filterText(text)
         val vector = vectorizer.vectorizeWithLength(filteredText)
-        val tensor = FloatNDArray(inputShape) { vector[it].toFloat() }.asTensor("features")
+        val tensorName = "features"
+        val tensor = FloatNDArray(inputShape) { vector[it].toFloat() }.asTensor(tensorName)
 
         // Prediction
         val prediction = mlModel.predict(listOf(tensor))
 
         // Data transformation
-        val predTensor = prediction[0] as Tensor
+        val predTensor = prediction[tensorName] as KITensor
         val data = predTensor.data as LongNDArray
         val array = data.array.blocks
 
         val classIndex = array[0][0].toInt()
         val license = classes[classIndex]
 
-        val unpack1 = ((prediction[1] as ONNXSequence).data as ArrayList<ONNXMap>)[0]
-        val unpack2 = (unpack1.data as HashMap<Long, Tensor>)[classIndex.toLong()] as Tensor
+        val unpack1 = ((prediction[tensorName] as ONNXSequence<*, *>).data as ArrayList<ONNXMap<*,*>>)[0]
+        val unpack2 = (unpack1.data as HashMap<Long, KITensor>)[classIndex.toLong()] as KITensor
         val probability = (unpack2.data as FloatNDArray).array.blocks[0][0]
 
         if (probability < THRESHOLD) {

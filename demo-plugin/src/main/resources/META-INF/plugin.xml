@@ -11,6 +11,17 @@
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <localInspection language="JAVA"
+                         displayName="Feature envy"
+                         groupName="Feature envy"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="org.jetbrains.research.refactoringDemoPlugin.featureEnvy.MyFeatureEnvyInspection"/>
+
+        <editorNotificationProvider
+                id="LicenseFileEditorNotificationProvider"
+                implementation="org.jetbrains.research.refactoringDemoPlugin.modelInference.LicenseFileEditorNotificationProvider"/>
+
         <toolWindow id="Project statistics" secondary="true" anchor="bottom"
                     factoryClass="org.jetbrains.research.refactoringDemoPlugin.statistics.MyToolWindowFactory"
         />
