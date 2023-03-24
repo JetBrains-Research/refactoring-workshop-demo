@@ -1,5 +1,6 @@
 package org.jetbrains.research.refactoringDemoPlugin.modelInference
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -10,6 +11,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotifications
+import org.jetbrains.research.refactoringDemoPlugin.modelInference.license.License
 
 class LicenseFileEditorNotificationProvider : EditorNotifications.Provider<EditorNotificationPanel>() {
     companion object {
@@ -37,7 +39,10 @@ class LicenseFileEditorNotificationProvider : EditorNotifications.Provider<Edito
             FileDocumentManager.getInstance().getDocument(file)!!
         }
         val licenseDetector = LicenseDetector()
-        val license = licenseDetector.detectLicense(licenseDocument.text)
+        val license: License? = ApplicationManager.getApplication().runReadAction<License?> {
+            licenseDetector.detectLicense(licenseDocument.text)
+        }
+//        val license = licenseDetector.detectLicense(licenseDocument.text)
         val licenseName = license?.name ?: "unknown"
         licenseNotificationPanel.text = "The module license is $licenseName"
         return licenseNotificationPanel

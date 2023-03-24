@@ -5,8 +5,8 @@ fun properties(key: String) = project.findProperty(key).toString()
 
 plugins {
     java
-    kotlin("jvm") version "1.7.21" apply true
-    id("org.jetbrains.intellij") version "1.1.3" apply true
+    kotlin("jvm") version "1.8.10" apply true
+    id("org.jetbrains.intellij") version "1.13.2" apply true
     id("org.jlleitschuh.gradle.ktlint") version "10.0.0" apply true
 }
 
@@ -21,13 +21,11 @@ allprojects {
     repositories {
         maven("https://packages.jetbrains.team/maven/p/big-code/bigcode")
         mavenCentral()
-        jcenter()
         maven("https://packages.jetbrains.team/maven/p/ki/maven")
     }
 
     dependencies {
-        implementation(kotlin("stdlib-jdk8"))
-        implementation("io.kinference:inference:0.1.4")
+        implementation("io.kinference:inference-core:0.2.11")
         implementation("org.jetbrains.research:plugin-utilities-core:1.0")
         implementation("org.jetbrains.research:plugin-utilities-test:1.0")
     }
@@ -42,17 +40,24 @@ allprojects {
 
     ktlint {
         enableExperimentalRules.set(true)
+        disabledRules.set(setOf("no-wildcard-imports"))
         filter {
             exclude("**/resources/**")
         }
     }
 
+    val jvmVersion = "17"
+
     tasks {
-        compileKotlin {
-            kotlinOptions.jvmTarget = "17"
+        withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+            kotlinOptions {
+                jvmTarget = jvmVersion
+            }
         }
-        compileTestKotlin {
-            kotlinOptions.jvmTarget = "17"
+
+        withType<JavaCompile> {
+            sourceCompatibility = jvmVersion
+            targetCompatibility = jvmVersion
         }
         test {
             useJUnitPlatform()

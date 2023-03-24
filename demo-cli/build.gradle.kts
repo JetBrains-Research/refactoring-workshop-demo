@@ -7,7 +7,7 @@ dependencies {
     implementation("org.jetbrains.research:plugin-utilities-core:1.0")
 }
 
-open class IOCliTask : org.jetbrains.intellij.tasks.RunIdeTask() {
+abstract class IOCliTask : org.jetbrains.intellij.tasks.RunIdeTask() {
     @get:Input
     val runner: String? by project
     val input: String? by project

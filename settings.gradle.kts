@@ -8,7 +8,7 @@ include(
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        jcenter()
         maven("https://packages.jetbrains.team/maven/p/big-code/bigcode")
+
     }
 }
