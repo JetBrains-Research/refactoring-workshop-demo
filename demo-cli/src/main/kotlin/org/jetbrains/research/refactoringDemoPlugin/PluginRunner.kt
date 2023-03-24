@@ -20,12 +20,12 @@ import java.nio.file.Path
 import kotlin.streams.toList
 import kotlin.system.exitProcess
 
-class PluginRunner : ApplicationStarter {
-    override fun getCommandName(): String {
-        return "DemoPluginCLI"
-    }
+abstract class PluginRunner : ApplicationStarter {
+    @Deprecated("Specify it as `id` for extension definition in a plugin descriptor")
+    override val commandName: String?
+        get() = "DemoPluginCLI"
 
-    override fun main(args: Array<String>) {
+    override fun main(args: List<String>) {
         JavaDocExtractor().main(args.drop(1))
     }
 }

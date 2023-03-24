@@ -42,30 +42,30 @@ class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
         }
     }
 
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
-        return FeatureEnvyInspectionVisitor(holder)
-    }
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean) = FeatureEnvyInspectionVisitor(holder)
 
     class FeatureEnvyInspectionVisitor(private val holder: ProblemsHolder?) : PsiElementVisitor() {
-        private val minAccessCount = 3
+        companion object {
+            private const val MIN_ACCESS_COUNT = 3
+        }
 
         override fun visitElement(element: PsiElement) {
-            if (element is PsiMethod) {
-                val method: PsiMethod = element
-                val currentClass = method.containingClass ?: return
-                val visitor = ClassAccessVisitor(currentClass)
-                visitor.visitElement(method)
+            if (element !is PsiMethod) {
+                return
+            }
+            val currentClass = element.containingClass ?: return
+            val visitor = ClassAccessVisitor(currentClass)
+            visitor.visitElement(element)
 
-                val accessCounts = visitor.accessCountPerClass
-                accessCounts.forEach { (clazz, accessCount) ->
-                    if (accessCount >= minAccessCount) {
-                        if (canMoveInstanceMethod(method, clazz)) {
-                            holder?.registerProblem(
-                                method,
-                                DemoPluginBundle.message("problem.holder.move.method.description"),
-                                MoveMethodFix(method, clazz)
-                            )
-                        }
+            val accessCounts = visitor.accessCountPerClass
+            accessCounts.forEach { (clazz, accessCount) ->
+                if (accessCount >= MIN_ACCESS_COUNT) {
+                    if (canMoveInstanceMethod(element, clazz)) {
+                        holder?.registerProblem(
+                            element,
+                            DemoPluginBundle.message("problem.holder.move.method.description"),
+                            MoveMethodFix(element, clazz)
+                        )
                     }
                 }
             }
@@ -75,18 +75,14 @@ class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
          * Checks if a method could be moved to the target class.
          * Returns true if a type of the target class occurs in fields' or parameters' types.
          */
-        private fun canMoveInstanceMethod(method: PsiMethod, target: PsiClass): Boolean {
-            val available = getAvailableVariables(method, target)
-            return available.isNotEmpty()
-        }
+        private fun canMoveInstanceMethod(method: PsiMethod, target: PsiClass) =
+            getAvailableVariables(method, target).isNotEmpty()
     }
 
     @Suppress("StatefulEp")
     class MoveMethodFix(private val methodToMove: PsiMethod, private val destinationClass: PsiClass) : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return DemoPluginBundle.message("quick.fix.move.method.name")
-        }
+        override fun getFamilyName() = DemoPluginBundle.message("quick.fix.move.method.name")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             ApplicationManager.getApplication().runReadAction {

@@ -12,19 +12,16 @@ class Vectorizer(private val vocabulary: List<String>) {
     val vectorDim = vocabulary.size
 
     /**
-     * Vectorizes (counting vectorization) given text into a vector_dim size vector and
+     * Vectorized (counting vectorization) given text into a vector_dim size vector and
      * adds the length of the text as a last component of the vector.
      * @param text text to vectorize.
      * @return IntArray with vector_dim + 1 size (vector).
      */
-    fun vectorizeWithLength(text: String): IntArray {
-        val textVector = vectorize(text).toMutableList()
-        textVector.add(text.length)
-        return textVector.toIntArray()
-    }
+    fun vectorizeWithLength(text: String) =
+        vectorize(text).toMutableList().also { it.add(text.length) }.toIntArray()
 
     /**
-     * Vectorizes (counting vectorization) given text into a vector_dim size vector.
+     * Vectorized (counting vectorization) given text into a vector_dim size vector.
      * @param text text to vectorize.
      * @return IntArray with vector_dim size (vector).
      */
