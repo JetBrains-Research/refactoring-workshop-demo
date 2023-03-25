@@ -1,17 +1,13 @@
 package org.jetbrains.research.refactoringDemoPlugin.featureEnvy
 
+import com.intellij.codeInsight.intention.FileModifier
 import com.intellij.codeInspection.AbstractBaseJavaLocalInspectionTool
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
-import com.intellij.psi.JavaRecursiveElementVisitor
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiElementVisitor
-import com.intellij.psi.PsiMethod
-import com.intellij.psi.PsiMethodCallExpression
+import com.intellij.psi.*
 import com.intellij.refactoring.move.moveInstanceMethod.MoveInstanceMethodDialog
 import com.siyeh.ig.psiutils.LibraryUtil
 import org.jetbrains.research.refactoringDemoPlugin.DemoPluginBundle
@@ -22,6 +18,8 @@ import org.jetbrains.research.refactoringDemoPlugin.util.getAvailableVariables
  * and suggest Move Method refactoring.
  */
 class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
+
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean) = FeatureEnvyInspectionVisitor(holder)
 
     /**
      * Extracts all accesses to other classes excluding library ones within the method.
@@ -41,8 +39,6 @@ class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
             accessCountPerClass.compute(calledClass) { _, count -> (count ?: 0) + 1 }
         }
     }
-
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean) = FeatureEnvyInspectionVisitor(holder)
 
     class FeatureEnvyInspectionVisitor(private val holder: ProblemsHolder?) : PsiElementVisitor() {
         companion object {
@@ -64,7 +60,7 @@ class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
                         holder?.registerProblem(
                             element,
                             DemoPluginBundle.message("problem.holder.move.method.description"),
-                            MoveMethodFix(element, clazz)
+                            MoveMethodFix(clazz)
                         )
                     }
                 }
@@ -80,24 +76,27 @@ class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
     }
 
     @Suppress("StatefulEp")
-    class MoveMethodFix(private val methodToMove: PsiMethod, private val destinationClass: PsiClass) : LocalQuickFix {
-
+    class MoveMethodFix(@FileModifier.SafeFieldForPreview private val destinationClass: PsiClass) : LocalQuickFix {
         override fun getFamilyName() = DemoPluginBundle.message("quick.fix.move.method.name")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            ApplicationManager.getApplication().runReadAction {
-                moveInstanceMethod(methodToMove, destinationClass)
-            }
+            val methodToMove = descriptor.psiElement
+            require(methodToMove is PsiMethod) { "Move method quick fix must be called only on a method" }
+            moveInstanceMethod(methodToMove, destinationClass)
         }
 
         private fun moveInstanceMethod(methodToMove: PsiMethod, targetClass: PsiClass) {
-            val available = getAvailableVariables(methodToMove, targetClass)
+            val available = ApplicationManager.getApplication().runReadAction<Array<PsiVariable>> {
+                getAvailableVariables(methodToMove, targetClass)
+            }
             if (available.isEmpty()) {
                 return
             }
-            val dialog = MoveInstanceMethodDialog(methodToMove, available)
-            dialog.title = DemoPluginBundle.message("quick.fix.move.method.dialog.title") + methodToMove.name
-            ApplicationManager.getApplication().invokeAndWait { dialog.show() }
+            ApplicationManager.getApplication().invokeLater {
+                val dialog = MoveInstanceMethodDialog(methodToMove, available)
+                dialog.title = DemoPluginBundle.message("quick.fix.move.method.dialog.title") + methodToMove.name
+                dialog.show()
+            }
         }
     }
 }
