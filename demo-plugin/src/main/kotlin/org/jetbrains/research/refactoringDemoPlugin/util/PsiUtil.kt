@@ -15,7 +15,8 @@ fun getAvailableVariables(method: PsiMethod, target: PsiClass): Array<PsiVariabl
     val parameters: Array<out PsiParameter> = method.parameterList.parameters
     val fields: Array<out PsiField> = psiClass!!.fields
     return concatFiltered(
-        parameters, fields
+        parameters,
+        fields
     ) { v -> v.type is PsiClassType && target == (v.type as PsiClassType).resolve() }
 }
 
@@ -23,7 +24,9 @@ fun getAvailableVariables(method: PsiMethod, target: PsiClass): Array<PsiVariabl
     Concatenates two arrays and filters the elements by the condition.
  */
 fun concatFiltered(
-    array1: Array<out PsiVariable>, array2: Array<out PsiVariable>, condition: (v: PsiVariable) -> Boolean
+    array1: Array<out PsiVariable>,
+    array2: Array<out PsiVariable>,
+    condition: (v: PsiVariable) -> Boolean
 ): Array<PsiVariable> {
     val filteredList = arrayListOf<PsiVariable>()
     array1.filterTo(filteredList, condition)
