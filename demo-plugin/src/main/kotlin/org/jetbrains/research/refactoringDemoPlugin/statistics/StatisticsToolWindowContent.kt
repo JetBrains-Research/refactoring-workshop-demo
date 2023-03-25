@@ -18,30 +18,31 @@ class StatisticsToolWindowContent(private val project: Project) {
     }
 
     private fun createContent() {
-        ApplicationManager.getApplication().invokeAndWait {
-            ApplicationManager.getApplication().runWriteAction {
-                val tableModel = DefaultTableModel()
-                val table = JBTable(tableModel)
-                val columns = listOf(
-                    "tool.window.class.file",
-                    "tool.window.class.name",
-                    "tool.window.method.count",
-                    "tool.window.lines.of.code"
-                )
-                columns.forEach { tableModel.addColumn(DemoPluginBundle.message(it)) }
+        val tableModel = DefaultTableModel()
+        val table = JBTable(tableModel)
+        val columns = listOf(
+            "tool.window.class.file",
+            "tool.window.class.name",
+            "tool.window.method.count",
+            "tool.window.lines.of.code"
+        )
+        columns.forEach { tableModel.addColumn(DemoPluginBundle.message(it)) }
 
-                calculateStatisticsForClasses().forEach { e ->
-                    tableModel.addRow(
-                        arrayOf(
-                            e.value.fileName,
-                            e.key,
-                            e.value.methodCount,
-                            e.value.loc
-                        )
+        val statistics = ApplicationManager.getApplication().runReadAction<Map<String, ClassStatistics>> {
+            calculateStatisticsForClasses()
+        }
+        ApplicationManager.getApplication().invokeAndWait {
+            statistics.forEach { (fqName, stat) ->
+                tableModel.addRow(
+                    arrayOf(
+                        stat.fileName,
+                        fqName,
+                        stat.methodCount,
+                        stat.loc
                     )
-                }
-                content.add(JBScrollPane(table), BorderLayout.CENTER)
+                )
             }
+            content.add(JBScrollPane(table), BorderLayout.CENTER)
         }
     }
 
