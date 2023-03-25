@@ -68,5 +68,8 @@ allprojects {
             }
             jvmArgs = listOf("-Djdk.module.illegalAccess.silent=true")
         }
+
+        withType<org.jetbrains.intellij.tasks.BuildSearchableOptionsTask>()
+            .forEach { it.enabled = false }
     }
 }

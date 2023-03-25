@@ -27,22 +27,22 @@ To build the plugin manually, run the following command:
 
 ## Running in CLI
 
-The plugin may also be used in CLI to extract JavaDoc comments from the project (see `Mining data` example for details).
+The plugin may also be used in CLI to extract JavaDoc and KotlinDocs comments from the project (see `Mining data` example for details).
 
 Open the terminal and execute the following commands:
 
 `cd /refactoring-workshop-demo/`
 
-`./runDemoPluginCLI.sh <absolute path to the project> <absolute path to the output file>`
+`./runDemoPluginCLI.sh <absolute path to the project> <absolute path to the output directory>`
 
 ## Use cases
 
-| Use case                   | Description   | Implementation package
-| :--------------------------|:--------------| :----------------------------------------------------------------------------------|
-| Mining data                | Headless plugin that extracts all methods and the corresponding JavaDoc comments from the project. | `demo-cli/demo.plugin`
-| Running ML models          | Running ML model inside the plugin.                                                                | `demo-plugin/demo.plugin.modelInference`
-| Recommending refactorings  | An inspection that detects the Feature Envy code smell and recommends Move Method refactoring.     | `demo-plugin/demo.plugin.featureEnvy`
-| Visualizing information    | A tool window that shows some statistics about the project.                                        | `demo-plugin/demo.plugin.statistics`
+| Use case                   | Description                                                                                                       | Implementation package
+| :--------------------------|:------------------------------------------------------------------------------------------------------------------| :----------------------------------------------------------------------------------|
+| Mining data                | Headless plugin that extracts all methods and the corresponding JavaDoc and KotlinDocs comments from the project. | `demo-cli/demo.plugin`
+| Running ML models          | Running ML model inside the plugin.                                                                               | `demo-plugin/demo.plugin.modelInference`
+| Recommending refactorings  | An inspection that detects the Feature Envy code smell and recommends Move Method refactoring.                    | `demo-plugin/demo.plugin.featureEnvy`
+| Visualizing information    | A tool window that shows some statistics about the project.                                                       | `demo-plugin/demo.plugin.statistics`
 
 ## How to use
 
@@ -50,10 +50,10 @@ Open the terminal and execute the following commands:
 
 The plugin runs in the headless mode, meaning that it does not launch the UI of the IDE, working in the background.
 The plugin receives two parameters: a path to the project that needs to be parsed and a path to the output file.
-Then, the plugin launches IntelliJ IDEA in the background, detects all Java files in the given project, and extracts each method name and corresponding JavaDoc.
+Then, the plugin launches IntelliJ IDEA in the background, detects all Java and Kotlin files in the given project, and extracts each method name and corresponding JavaDoc and KotlinDoc.
 Finally, the plugin saves the extracted information in the JSON format.
 
-To start the mining JavaDoc comments, open terminal and execute the following commands:
+To start the mining JavaDoc and KotlinDocs comments, open terminal and execute the following commands:
 
 `cd /refactoring-workshop-demo/`
 
