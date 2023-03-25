@@ -12,7 +12,6 @@ import org.jetbrains.research.refactoringDemoPlugin.modelInference.license.BSD_3
 import org.jetbrains.research.refactoringDemoPlugin.modelInference.license.License
 import org.jetbrains.research.refactoringDemoPlugin.modelInference.license.MIT
 import java.util.*
-import kotlin.time.ExperimentalTime
 
 /**
  * See [Sorrel plugin source code](https://github.com/JetBrains-Research/sorrel).
