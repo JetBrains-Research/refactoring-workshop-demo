@@ -51,7 +51,6 @@ class LicenseDetector {
      * @param text for license detection
      * @return object of detected License.
      */
-    @OptIn(ExperimentalTime::class)
     suspend fun detectLicense(text: String): License? {
         // Model & vectorizer for detection of licenses on project level initializiation
         val mlModel = KIEngine.loadModel(
