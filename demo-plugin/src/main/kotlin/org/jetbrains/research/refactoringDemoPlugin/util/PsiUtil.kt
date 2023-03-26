@@ -1,8 +1,9 @@
 package org.jetbrains.research.refactoringDemoPlugin.util
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.guessProjectDir
-import com.intellij.openapi.roots.ProjectFileIndex
+import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.vfs.VfsUtilCore
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 import org.jetbrains.kotlin.psi.KtFile
 
@@ -36,20 +37,28 @@ fun concatFiltered(
 /*
     Extracts all Kotlin and Java classes from the project.
  */
-fun Project.extractKotlinAndJavaClasses(): MutableList<PsiClass> {
-    val classes = mutableListOf<PsiClass>()
-    this.guessProjectDir()?.let { projectDir ->
-        ProjectFileIndex.getInstance(this).iterateContentUnderDirectory(
-            projectDir,
-            {
-                when (val psiFile = PsiManager.getInstance(this).findFile(it)) {
-                    is PsiJavaFile -> classes.addAll(psiFile.classes)
-                    is KtFile -> classes.addAll(psiFile.classes)
-                }
-                true
-            },
-            { it.extension == "java" || it.extension == "kt" }
-        )
+fun Project.extractKotlinAndJavaClasses(): List<PsiClass> =
+    this.extractPsiFiles { it.extension == "java" || it.extension == "kt" }.mapNotNull { file ->
+        when (file) {
+            is PsiJavaFile -> file.classes.toList()
+            is KtFile -> file.classes.toList()
+            else -> null
+        }
+    }.flatten()
+
+fun Project.extractPsiFiles(filePredicate: (VirtualFile) -> Boolean): MutableSet<PsiFile> {
+    val projectPsiFiles = mutableSetOf<PsiFile>()
+    val projectRootManager = ProjectRootManager.getInstance(this)
+    val psiManager = PsiManager.getInstance(this)
+
+    projectRootManager.contentRoots.mapNotNull { root ->
+        VfsUtilCore.iterateChildrenRecursively(root, null) { virtualFile ->
+            if (!filePredicate(virtualFile) || virtualFile.canonicalPath == null) {
+                return@iterateChildrenRecursively true
+            }
+            val psi = psiManager.findFile(virtualFile) ?: return@iterateChildrenRecursively true
+            projectPsiFiles.add(psi)
+        }
     }
-    return classes
+    return projectPsiFiles
 }
