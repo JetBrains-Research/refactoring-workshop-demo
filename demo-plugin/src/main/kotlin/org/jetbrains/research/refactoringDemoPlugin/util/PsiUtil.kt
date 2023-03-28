@@ -1,11 +1,6 @@
 package org.jetbrains.research.refactoringDemoPlugin.util
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.vfs.VfsUtilCore
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
-import org.jetbrains.kotlin.psi.KtFile
 
 /*
     Searches for variables (fields or parameters) of the type the method is supposed to be moved to.
@@ -32,33 +27,4 @@ fun concatFiltered(
     array1.filterTo(filteredList, condition)
     array2.filterTo(filteredList, condition)
     return filteredList.toTypedArray()
-}
-
-/*
-    Extracts all Kotlin and Java classes from the project.
- */
-fun Project.extractKotlinAndJavaClasses(): List<PsiClass> =
-    this.extractPsiFiles { it.extension == "java" || it.extension == "kt" }.mapNotNull { file ->
-        when (file) {
-            is PsiJavaFile -> file.classes.toList()
-            is KtFile -> file.classes.toList()
-            else -> null
-        }
-    }.flatten()
-
-fun Project.extractPsiFiles(filePredicate: (VirtualFile) -> Boolean): MutableSet<PsiFile> {
-    val projectPsiFiles = mutableSetOf<PsiFile>()
-    val projectRootManager = ProjectRootManager.getInstance(this)
-    val psiManager = PsiManager.getInstance(this)
-
-    projectRootManager.contentRoots.mapNotNull { root ->
-        VfsUtilCore.iterateChildrenRecursively(root, null) { virtualFile ->
-            if (!filePredicate(virtualFile) || virtualFile.canonicalPath == null) {
-                return@iterateChildrenRecursively true
-            }
-            val psi = psiManager.findFile(virtualFile) ?: return@iterateChildrenRecursively true
-            projectPsiFiles.add(psi)
-        }
-    }
-    return projectPsiFiles
 }
