@@ -11,7 +11,6 @@ import com.intellij.psi.*
 import com.intellij.refactoring.move.moveInstanceMethod.MoveInstanceMethodDialog
 import com.siyeh.ig.psiutils.LibraryUtil
 import org.jetbrains.research.refactoringDemoPlugin.DemoPluginBundle
-import org.jetbrains.research.refactoringDemoPlugin.util.getAvailableVariables
 
 /**
  * Walks through methods in the file, check if a method uses entities of another class more than those of enclosing one,
@@ -99,4 +98,31 @@ class MyFeatureEnvyInspection : AbstractBaseJavaLocalInspectionTool() {
             }
         }
     }
+}
+
+/*
+    Concatenates two arrays and filters the elements by the condition.
+ */
+private fun concatFiltered(
+    array1: Array<out PsiVariable>,
+    array2: Array<out PsiVariable>,
+    condition: (v: PsiVariable) -> Boolean
+): Array<PsiVariable> {
+    val filteredList = arrayListOf<PsiVariable>()
+    array1.filterTo(filteredList, condition)
+    array2.filterTo(filteredList, condition)
+    return filteredList.toTypedArray()
+}
+
+/*
+    Searches for variables (fields or parameters) of the type the method is supposed to be moved to.
+ */
+internal fun getAvailableVariables(method: PsiMethod, target: PsiClass): Array<PsiVariable> {
+    val psiClass = method.containingClass
+    val parameters: Array<out PsiParameter> = method.parameterList.parameters
+    val fields: Array<out PsiField> = psiClass!!.fields
+    return concatFiltered(
+        parameters,
+        fields
+    ) { v -> v.type is PsiClassType && target == (v.type as PsiClassType).resolve() }
 }
