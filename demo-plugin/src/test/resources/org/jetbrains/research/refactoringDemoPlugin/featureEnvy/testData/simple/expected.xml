@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problems>
+  <problem>
+    <file>TestData.java</file>
+    <entry_point TYPE="method" FQNAME="Customer String getMobilePhoneNumber()" />
+    <problem_class id="MyFeatureEnvy" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Feature envy</problem_class>
+    <description>Method uses methods of another class more than those of the enclosing class.</description>
+    <language>JAVA</language>
+    <offset>4</offset>
+    <length>205</length>
+    <line>19</line>
+  </problem>
+</problems>

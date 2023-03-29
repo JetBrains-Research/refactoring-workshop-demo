@@ -24,14 +24,6 @@ allprojects {
         maven("https://packages.jetbrains.team/maven/p/ki/maven")
     }
 
-    dependencies {
-        implementation("io.kinference:inference-core-jvm:0.2.12") {
-            exclude("org.slf4j")
-        }
-        implementation("org.jetbrains.research:plugin-utilities-core:1.0")
-        implementation("org.jetbrains.research:plugin-utilities-test:1.0")
-    }
-
     intellij {
         version.set(properties("platformVersion"))
         type.set(properties("platformType"))
@@ -60,13 +52,6 @@ allprojects {
         withType<JavaCompile> {
             sourceCompatibility = jvmVersion
             targetCompatibility = jvmVersion
-        }
-        test {
-            useJUnitPlatform()
-            testLogging {
-                events("passed", "skipped", "failed")
-            }
-            jvmArgs = listOf("-Djdk.module.illegalAccess.silent=true")
         }
 
         withType<org.jetbrains.intellij.tasks.BuildSearchableOptionsTask>()
