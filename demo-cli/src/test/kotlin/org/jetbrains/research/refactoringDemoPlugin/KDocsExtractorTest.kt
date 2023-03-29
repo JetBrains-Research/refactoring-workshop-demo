@@ -5,6 +5,10 @@ import com.intellij.psi.PsiNamedElement
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.research.refactoringDemoPlugin.util.extractElementsOfType
+import org.jetbrains.uast.UAnchorOwner
+import org.jetbrains.uast.UComment
+import org.jetbrains.uast.UMethod
+import org.jetbrains.uast.toUElement
 
 class KDocsExtractorTest : BasePlatformTestCase() {
     fun testKDocExtractor() {
@@ -25,12 +29,11 @@ class KDocsExtractorTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val expected = mapOf(
-            "foo1" to
-                """
+            "foo1" to """
             /**
             * My KDoc 1
             */
-                """.trimIndent(),
+            """.trimIndent(),
             "foo2" to """
             /**
             * My KDoc 2
@@ -40,6 +43,42 @@ class KDocsExtractorTest : BasePlatformTestCase() {
         val kDocs = psi.extractElementsOfType(PsiComment::class.java).filter { it.parent is KtFunction }
         assert(kDocs.size == 2) { "The expected size of the kDocs list is 2" }
         val actual = kDocs.associate { (it.parent as PsiNamedElement).name to it.text }
+        assert(expected.all { (f, d) -> actual[f] != null && actual[f]!!.trimEachLine() == d.trimEachLine() })
+    }
+
+    fun testKDocExtractorWithUast() {
+        val psi = myFixture.configureByText(
+            "dummy.kt",
+            """
+            /**
+             * My KDoc 1
+             */
+            fun foo1() = run { }
+
+            class A {
+                /**
+                 * My KDoc 2
+                 */
+                fun foo2() = run { }
+            }
+            """.trimIndent()
+        )
+        val expected = mapOf(
+            "foo1" to """
+            /**
+            * My KDoc 1
+            */
+            """.trimIndent(),
+            "foo2" to """
+            /**
+            * My KDoc 2
+            */
+            """.trimIndent()
+        )
+        val kDocs = psi.extractElementsOfType(PsiComment::class.java).mapNotNull { it.toUElement(UComment::class.java) }
+            .filter { it.uastParent is UMethod }
+        assert(kDocs.size == 2) { "The expected size of the kDocs list is 2" }
+        val actual = kDocs.associate { (it.uastParent as UAnchorOwner).uastAnchor!!.name to it.text }
         assert(expected.all { (f, d) -> actual[f] != null && actual[f]!!.trimEachLine() == d.trimEachLine() })
     }
 
