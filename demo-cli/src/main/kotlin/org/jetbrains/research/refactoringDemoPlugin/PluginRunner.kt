@@ -15,6 +15,10 @@ import org.jetbrains.research.pluginUtilities.openRepository.getKotlinJavaReposi
 import org.jetbrains.research.refactoringDemoPlugin.util.extractElementsOfType
 import org.jetbrains.research.refactoringDemoPlugin.util.extractModules
 import org.jetbrains.research.refactoringDemoPlugin.util.findPsiFilesByExtension
+import org.jetbrains.uast.UAnchorOwner
+import org.jetbrains.uast.UComment
+import org.jetbrains.uast.UMethod
+import org.jetbrains.uast.toUElement
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -48,23 +52,40 @@ class JavaKotlinDocExtractor : CliktCommand() {
         val gson = GsonBuilder().setPrettyPrinting().create()
         repositoryOpener.openProjectWithResolve(input.toPath()) { project ->
             ApplicationManager.getApplication().invokeAndWait {
-                project.extractModules().map { module ->
-                    val kotlinKDocs = module.getKDocs("kt").filter { it.parent is KtFunction }
-                    val javaKDocs = module.getKDocs("java").filter { it.parent is PsiMethod }
+                val modules = project.extractModules()
 
-                    kotlinKDocs + javaKDocs
-                }.flatten().mapNotNull { comment ->
-                    (comment.parent as? PsiNamedElement)?.name?.let {
-                        DatasetItem(it, comment.text)
-                    }
-                }.also {
-                    File("$output/results.json").writeText(gson.toJson(it))
+                modules.extractKDocsViaPsi().also {
+                    File("$output/results_with_psi.json").writeText(gson.toJson(it))
+                }
+
+                modules.extractKDocsViaUast().also {
+                    File("$output/results_with_uast.json").writeText(gson.toJson(it))
                 }
             }
             true
         }
         exitProcess(0)
     }
+
+    private fun List<Module>.extractKDocsViaPsi() = this.map { module ->
+        val kotlinKDocs = module.getKDocs("kt").filter { it.parent is KtFunction }
+        val javaKDocs = module.getKDocs("java").filter { it.parent is PsiMethod }
+
+        kotlinKDocs + javaKDocs
+    }.flatten().mapNotNull { comment ->
+        (comment.parent as? PsiNamedElement)?.name?.let {
+            DatasetItem(it, comment.text)
+        }
+    }
+
+    private fun List<Module>.extractKDocsViaUast() = this.map {
+        it.getKDocs("kt") + it.getKDocs("java")
+    }.flatten().mapNotNull { it.toUElement(UComment::class.java) }
+        .filter { it.uastParent is UMethod }.map { comment ->
+            (comment.uastParent as? UAnchorOwner)?.uastAnchor?.let {
+                DatasetItem(it.name, comment.text)
+            }
+        }
 
     data class DatasetItem(val methodName: String, val javaDoc: String)
 }
