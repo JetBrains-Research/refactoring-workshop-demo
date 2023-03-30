@@ -1,0 +1,9 @@
+html {
+    width: 60%;
+    height: 100%;
+    margin: 0;
+    padding: 10px 10px;
+    background: #2b2b2c;
+    color: #A9B7C6;
+    font: normal 18px/1.6 system-ui, sans-serif;
+}

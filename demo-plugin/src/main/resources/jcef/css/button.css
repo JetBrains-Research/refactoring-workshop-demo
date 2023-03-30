@@ -1,0 +1,32 @@
+button {
+    outline: none !important;
+    border: none;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    justify-content: center;
+    width: 100%;
+    display: block;
+    position: relative;
+    z-index: 1;
+    border-radius: 25px;
+    overflow: hidden;
+    margin: 0 auto;
+    background: #a64bf4;
+    background: -webkit-linear-gradient(left, #7017b9, #a80a1f, #7017b9, #a80a1f);
+    background: -o-linear-gradient(left, #641aa4, #9a071b, #641aa4, #8f0519);
+    background: -moz-linear-gradient(left, #641aa4, #9a071b, #641aa4, #8f0519);
+    background: linear-gradient(left, #641aa4, #9a071b, #641aa4, #8f0519);
+
+    margin-top: 5px;
+
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    line-height: 1.2;
+}
+
+button:hover {
+    cursor: pointer;
+}
