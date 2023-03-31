@@ -11,6 +11,7 @@ import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
 import org.cef.handler.CefLoadHandler
 import org.cef.handler.CefLoadHandlerAdapter
+import org.intellij.lang.annotations.Language
 import javax.swing.JComponent
 
 
@@ -38,8 +39,8 @@ class JcefWindow(service: JcefWindowService) {
     }
 
     fun executeJavascript(
-        codeBeforeInject: String = "",
-        codeAfterInject: String = "",
+        @Language("JavaScript") codeBeforeInject: String = "",
+        @Language("JavaScript") codeAfterInject: String = "",
         queryResult: String = "",
         handler: (String) -> JBCefJSQuery.Response?
     ) {

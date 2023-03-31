@@ -23,12 +23,9 @@ class JcefWindowFactory : ToolWindowFactory {
         jComponent.parent.add(jcefWindow.jComponent)
     }
 
-    private val LOG = getLogger(JcefWindow::class)
-
     private fun StringBuilder.addTableRow(vararg data: String) {
         append("""newRow = document.createElement("tr");""")
         for (value in data) {
-            LOG.warn { "??? newTh.appendChild(document.createTextNode($value));" }
             append("""newTh = document.createElement("th");""")
             append("""newTh.appendChild(document.createTextNode("$value"));""")
             append("""newRow.appendChild(newTh);""")
@@ -40,26 +37,17 @@ class JcefWindowFactory : ToolWindowFactory {
         jcefWindow.executeJavascript(
             """
             table = document.getElementById("stattable");
-            var count = 0;
             
             const but = document.getElementById('button');
             but.onclick = function() {
-                clicked1 = "button was clicked";
-                count += 1;
+                clicked = "button was clicked";
             """,
             """}""",
-            "clicked1"
+            "clicked"
         ) {
-            LOG.warn { "Event: $it" }
             val statistics = project.getService(StatisticsService::class.java).getStatistics(project)
 
-            LOG.warn { "Stats count: ${statistics.size}" }
-
             val jsCode = StringBuilder()
-
-            jsCode.append("""smth = document.createElement("span");""")
-            jsCode.append("""smth.appendChild(document.createTextNode("sanity check"));""")
-            jsCode.append("""document.getElementById("root").appendChild(smth);""")
 
             for ((fqName, stat) in statistics) {
                 jsCode.addTableRow(stat.fileName, fqName, stat.methodCount.toString(), stat.loc.toString())
@@ -71,7 +59,6 @@ class JcefWindowFactory : ToolWindowFactory {
                 0
             )
 
-            LOG.warn { "Executed?" }
             null
         }
     }
