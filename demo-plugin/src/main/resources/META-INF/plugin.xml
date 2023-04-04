@@ -26,6 +26,8 @@
         <toolWindow id="Project statistics" secondary="true" anchor="bottom"
                     factoryClass="org.jetbrains.research.refactoringDemoPlugin.statistics.StatisticsToolWindowFactory"
         />
+
+        <toolWindow factoryClass="org.jetbrains.research.refactoringDemoPlugin.jcef.JcefWindowFactory" id="JcefExample" anchor="right"/>
     </extensions>
 
     <actions>

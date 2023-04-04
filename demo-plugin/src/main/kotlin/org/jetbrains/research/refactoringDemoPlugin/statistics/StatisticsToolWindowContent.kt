@@ -5,7 +5,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import org.jetbrains.research.refactoringDemoPlugin.DemoPluginBundle
-import org.jetbrains.research.refactoringDemoPlugin.util.extractKotlinAndJavaClasses
 import java.awt.BorderLayout
 import javax.swing.JPanel
 import javax.swing.table.DefaultTableModel
@@ -28,9 +27,8 @@ class StatisticsToolWindowContent(private val project: Project) {
         )
         columns.forEach { tableModel.addColumn(DemoPluginBundle.message(it)) }
 
-        val statistics = ApplicationManager.getApplication().runReadAction<Map<String, ClassStatistics>> {
-            calculateStatisticsForClasses()
-        }
+        val statistics = project.getService(StatisticsService::class.java).getStatistics(project)
+
         ApplicationManager.getApplication().invokeAndWait {
             statistics.forEach { (fqName, stat) ->
                 tableModel.addRow(
@@ -45,14 +43,4 @@ class StatisticsToolWindowContent(private val project: Project) {
             content.add(JBScrollPane(table), BorderLayout.CENTER)
         }
     }
-
-    private fun calculateStatisticsForClasses() = project.extractKotlinAndJavaClasses().mapNotNull { psi ->
-        psi.qualifiedName?.let {
-            it to ClassStatistics(
-                psi.containingFile.name,
-                psi.methods.size,
-                psi.text.countLines()
-            )
-        }
-    }.toMap()
 }

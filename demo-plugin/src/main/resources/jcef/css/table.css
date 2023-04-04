@@ -1,0 +1,12 @@
+table, th, td {
+    border: 1px solid;
+    font-size: 14px;
+}
+
+th {
+    font-weight: bold;
+}
+
+td {
+    font-weight: normal;
+}
