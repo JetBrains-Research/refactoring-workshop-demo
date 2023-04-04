@@ -1,19 +1,10 @@
 package org.jetbrains.research.refactoringDemoPlugin.jcef
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
-import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.jcef.JBCefApp
-import com.intellij.ui.jcef.executeJavaScriptAsync
-import com.jetbrains.rd.util.first
-import com.jetbrains.rd.util.firstOrNull
-import com.jetbrains.rd.util.getLogger
-import com.jetbrains.rd.util.warn
-import org.jetbrains.research.refactoringDemoPlugin.statistics.ClassStatistics
 import org.jetbrains.research.refactoringDemoPlugin.statistics.StatisticsService
-import java.awt.BorderLayout
 
 class JcefWindowFactory : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
